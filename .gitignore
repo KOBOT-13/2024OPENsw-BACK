@@ -1,1 +1,3 @@
-"*.pyc\n__pycache__/\ndb.sqlite3\nvenv/" 
+"*.pyc\n__pycache__/\ndb.sqlite3\nvenv/"
+# Virtual environment
+venv/

@@ -1,5 +1,5 @@
 """
-URL configuration for opensw_kobot project.
+URL configuration for ossKobot project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -20,11 +20,12 @@ from rest_framework.permissions import AllowAny
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'ossKobot'
 
 schema_url_v1_patterns = [
-    re_path(r'^v1/', include('.urls', namespace='ossKobot')),
+    re_path(r'^v1/', include('ossKobot.urls', namespace='ossKobot')),
 ]
 
 schema_view_v1 = get_schema_view(
@@ -42,4 +43,12 @@ schema_view_v1 = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # Auto DRF API docs
+    re_path(r'^swagger(?P<format>\.json|\.yaml)/v1$', schema_view_v1.without_ui(cache_timeout=0), name='schema-json'),
+    re_path(r'^swagger/v1/$', schema_view_v1.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^redoc/v1/$', schema_view_v1.with_ui('redoc', cache_timeout=0), name='schema-redoc-v1'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

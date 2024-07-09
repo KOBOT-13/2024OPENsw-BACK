@@ -15,7 +15,30 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path, include
+from rest_framework.permissions import AllowAny
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from django.conf import settings
+
+app_name = 'ossKobot'
+
+schema_url_v1_patterns = [
+    re_path(r'^v1/', include('.urls', namespace='ossKobot')),
+]
+
+schema_view_v1 = get_schema_view(
+    openapi.Info(
+        title="ossKobot Open API",
+        default_version='v1',
+        description="안녕하세요. ossKobot Open API 문서 페이지 입니다.",
+        terms_of_service="https://www.google.com/policies/terms/",
+    ),
+    validators=['flex'],
+    public=True,
+    permission_classes=(AllowAny,),
+    patterns=schema_url_v1_patterns,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

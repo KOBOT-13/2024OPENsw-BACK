@@ -20,7 +20,7 @@ source venv/bin/activate
 ```
 명령어를 활용하여 가상환경을 활성화 시켜줍니다.
 
-### secrets.json 설치하기
+### secret.json 설치하기
 ```bash
 C:\...\Github\2024OpenSW-BACK\secret.json
 ```

@@ -27,3 +27,10 @@ class Character(models.Model):
     def __str__(self):
         return self.name
 
+class Quiz(models.Model):
+    book = models.ForeignKey(Book, related_name='quizz', on_delete=models.CASCADE)  # 책과의 관계
+    title = models.CharField(max_length=200)  # 퀴즈 제목
+
+    def __str__(self):
+        return self.title
+

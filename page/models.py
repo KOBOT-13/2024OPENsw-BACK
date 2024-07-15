@@ -34,3 +34,15 @@ class Quiz(models.Model):
     def __str__(self):
         return self.title
 
+class Question(models.Model):
+    quiz = models.ForeignKey(Quiz, related_name='questions', on_delete=models.CASCADE)  # 퀴즈와의 관계
+    question_text = models.TextField()  # 질문 텍스트
+    correct_answer = models.IntegerField()  # 정답 (선지번호)
+    option_one = models.CharField(max_length=200)  # 선택지 1
+    option_two = models.CharField(max_length=200)  # 선택지 2
+    option_three = models.CharField(max_length=200, blank=True)  # 선택지 3
+    option_four = models.CharField(max_length=200, blank=True)  # 선택지 4
+
+    def __str__(self):
+        return self.question_text
+

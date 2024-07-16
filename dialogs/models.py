@@ -28,20 +28,6 @@ class Message(models.Model):
     message = models.TextField()  # 대화 내용
     timestamp = models.DateTimeField(auto_now_add=True)  # 대화가 발생한 시간
 
-    def clean(self):
-        if self.sender_type == 'user' and not self.user_sender:
-            raise ValueError("sender_type is 'user', but user_sender is not set.")
-        if self.sender_type == 'character' and not self.character_sender:
-            raise ValueError("sender_type is 'character', but character_sender is not set.")
-        if self.sender_type == 'user' and self.character_sender:
-            raise ValueError("sender_type is 'user', but character_sender is set.")
-        if self.sender_type == 'character' and self.user_sender:
-            raise ValueError("sender_type is 'character', but user_sender is set.")
-
-    def save(self, *args, **kwargs):
-        self.clean()  # Perform the clean method to check validity before saving
-        super().save(*args, **kwargs)
-
     def __str__(self):
         sender = self.user_sender if self.sender_type == 'user' else self.character_sender
         return f"Message from {sender} at {self.timestamp}"

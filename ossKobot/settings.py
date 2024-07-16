@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'books',
     'dialogs',
-    'pages',
+    'mypages',
     'quizzes',
     'users',
 

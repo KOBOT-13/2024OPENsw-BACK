@@ -4,14 +4,14 @@ from books.models import Book
 class Quiz(models.Model):
     quiz_id = models.AutoField(primary_key=True) # 퀴즈 ID
 
-    book_id = models.ForeignKey(Book, related_name='quizz', on_delete=models.CASCADE)  # 책과의 관계
+    book = models.ForeignKey(Book, related_name='quizz', on_delete=models.CASCADE)  # 책과의 관계
     quiz_image = models.ImageField(upload_to='quiz_images/', blank=True, null=True)  # 퀴즈 이미지
 
     def __str__(self):
         return self.title
 
 class Question(models.Model):
-    quiz_id = models.ForeignKey(Quiz, related_name='questions', on_delete=models.CASCADE)  # 퀴즈와의 관계
+    quiz = models.ForeignKey(Quiz, related_name='questions', on_delete=models.CASCADE)  # 퀴즈와의 관계
 
     question_text = models.TextField()  # 질문 텍스트
     correct_answer = models.IntegerField()  # 정답 (선지번호)

@@ -10,5 +10,6 @@ router.register('character', CharacterViewSet, basename='CharacterViewSet')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('<int:book_id>/characters/', BookCharactersAPIView.as_view(), name='book-characters'),
     # ex) path('pages/<int:year>/', AllPagesView.as_view(), name='all-pages-list'),
 ]

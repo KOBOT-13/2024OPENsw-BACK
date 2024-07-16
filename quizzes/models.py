@@ -2,10 +2,9 @@ from django.db import models
 from books.models import Book
 
 class Quiz(models.Model):
-    quiz_id = models.AutoField(primary_key=True) # id
+    quiz_id = models.AutoField(primary_key=True) # 퀴즈 ID
 
     book_id = models.ForeignKey(Book, related_name='quizz', on_delete=models.CASCADE)  # 책과의 관계
-    title = models.CharField(max_length=200)  # 퀴즈 제목
     quiz_image = models.ImageField(upload_to='quiz_images/', blank=True, null=True)  # 퀴즈 이미지
 
     def __str__(self):

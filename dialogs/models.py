@@ -3,7 +3,7 @@ from django.contrib.auth.models import User  # Assuming you are using Django's b
 from books.models import Book, Character
 
 class Conversation(models.Model):
-    conversation_id = models.AutoField(primary_key=True)  # 대화 ID
+    id = models.AutoField(primary_key=True)  # 대화 ID
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # 사용자 ID (참조: users 테이블)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)  # 책 ID (참조: books 테이블)
     character = models.ForeignKey(Character, on_delete=models.CASCADE)  # 등장인물 ID (참조: character 테이블)
@@ -20,7 +20,7 @@ class Message(models.Model):
         ('character', 'Character')
     ]
 
-    message_id = models.AutoField(primary_key=True)  # 메시지 ID
+    id = models.AutoField(primary_key=True)  # 메시지 ID
     conversation = models.ForeignKey(Conversation, related_name='messages', on_delete=models.CASCADE)  # 대화 ID (참조: conversations 테이블)
     sender_type = models.CharField(max_length=10, choices=SENDER_TYPE_CHOICES)  # 보낸 사람의 타입 (User 또는 Character)
     user_sender = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)  # 사용자 ID (참조: users 테이블)

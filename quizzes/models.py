@@ -2,7 +2,7 @@ from django.db import models
 from books.models import Book
 
 class Quiz(models.Model):
-    quiz_id = models.AutoField(primary_key=True) # 퀴즈 ID
+    id = models.AutoField(primary_key=True) # 퀴즈 ID
 
     book = models.ForeignKey(Book, related_name='quizzes', on_delete=models.CASCADE)  # 책과의 관계
     quiz_image = models.ImageField(upload_to='quiz_images/', blank=True, null=True)  # 퀴즈 이미지
@@ -11,7 +11,7 @@ class Quiz(models.Model):
         return self.title
 
 class Question(models.Model):
-    question_id = models.AutoField(primary_key=True) # 질문 ID
+    id = models.AutoField(primary_key=True) # 질문 ID
 
     quiz = models.ForeignKey(Quiz, related_name='questions', on_delete=models.CASCADE)  # 퀴즈와의 관계
     question_text = models.TextField()  # 질문 텍스트

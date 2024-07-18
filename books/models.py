@@ -2,7 +2,7 @@ from django.db import models
 from users.models import User
 
 class Book(models.Model):
-    book_id = models.AutoField(primary_key=True) # id
+    id = models.AutoField(primary_key=True) # id
 
     title = models.CharField(max_length=200)  # 책 제목
     author = models.CharField(max_length=100)  # 저자
@@ -19,7 +19,7 @@ class Book(models.Model):
         return self.title
 
 class Character(models.Model):
-    character_id = models.AutoField(primary_key=True) # id
+    id = models.AutoField(primary_key=True) # id
     name = models.CharField(max_length=100)  # 등장인물 이름
     description = models.TextField(blank=True)  # 등장인물 설명
     character_image = models.ImageField(upload_to='character_image/', blank=True, null=True)  # 등장인물 사진

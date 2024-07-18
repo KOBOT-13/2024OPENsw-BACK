@@ -55,8 +55,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_yasg',
-
-
     'rest_framework.authtoken',
     'allauth',
     'allauth.account',
@@ -66,12 +64,13 @@ INSTALLED_APPS = [
     'dj_rest_auth.registration',
 
     # apps
-    'pages',
-    'users',
-    'dialogs',
-    'quizzes',
     'books',
+    'dialogs',
+    'mypages',
+    'quizzes',
+    'users',
 ]
+
 SITE_ID = 1
 
 # 카카오톡 api

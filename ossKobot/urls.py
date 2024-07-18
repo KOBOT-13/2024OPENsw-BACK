@@ -25,7 +25,7 @@ from django.conf.urls.static import static
 app_name = 'ossKobot'
 
 schema_url_v1_patterns = [
-    re_path(r'^v1/', include('ossKobot.urls', namespace='ossKobot')),
+    re_path(r'^/', include('ossKobot.urls', namespace='ossKobot')),
 ]
 
 schema_view_v1 = get_schema_view(
@@ -43,13 +43,13 @@ schema_view_v1 = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     # app
-    path('api/v1/users/', include('users.urls')),
-    path('api/v1/pages/', include('pages.urls')),
-    path('api/v1/books/', include('books.urls')),
-    path('api/v1/dialogs/', include('dialogs.urls')),
-    path('api/v1/quizzes/', include('quizzes.urls')),
+
+    path('api/users/', include('users.urls')),
+    path('api/mypages/', include('mypages.urls')),
+    path('api/books/', include('books.urls')),
+    path('api/dialogs/', include('dialogs.urls')),
+    path('api/quizzes/', include('quizzes.urls')),
 
     # Auto DRF API docs
     re_path(r'^swagger(?P<format>\.json|\.yaml)/v1$', schema_view_v1.without_ui(cache_timeout=0), name='schema-json'),

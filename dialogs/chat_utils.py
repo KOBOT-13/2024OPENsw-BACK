@@ -5,7 +5,11 @@ api_key = "API_KEY"
 os.environ["OPENAI_API_KEY"] = api_key
 
 client = OpenAI()
+
 character_key = 1
+
+# 대화 기록
+convo_history = []
 
 character_map = {
     0: "답변은 한국어로 하고 백설공주의 마녀의 입장에서 대답해줘",
@@ -27,6 +31,8 @@ def chatbot(input_message):
         
         model = "gpt-3.5-turbo"
        
+        convo_history.append({"role": "user", "content": input_message})
+        
         messages = [
                 {   "role":"system",
                      "content": characters
@@ -50,7 +56,8 @@ def chatbot(input_message):
             bot_response = response.choices[0].message.content
         else:
             bot_response = "No response from the model"
-
+        convo_history.append({"role": "assistant", "content": bot_response})
+        
         return bot_response
 
     except Exception as e:

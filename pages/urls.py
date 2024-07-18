@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from . import views
 from .views import *
 
 router = DefaultRouter()
@@ -8,8 +9,9 @@ router = DefaultRouter()
 
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', views.home, name='home'),
     # ex) path('pages/<int:year>/', AllPagesView.as_view(), name='all-pages-list'),
+    path('audiotext/', AudioTextView.as_view(), name='audio-txt'),
 
 
 ]

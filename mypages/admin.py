@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import QuizRecord, ConversationRecord
 
-# Register your models here.
+admin.site.register(QuizRecord)
+admin.site.register(ConversationRecord)

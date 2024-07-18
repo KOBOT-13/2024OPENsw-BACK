@@ -20,7 +20,7 @@ class Message(models.Model):
         ('character', 'Character')
     ]
 
-    message_id = models.AutoField(primary_key=True)  # 메시지 ID
+    id = models.AutoField(primary_key=True)  # 메시지 ID
     conversation = models.ForeignKey(Conversation, related_name='messages', on_delete=models.CASCADE)  # 대화 ID (참조: conversations 테이블)
     sender_type = models.CharField(max_length=10, choices=SENDER_TYPE_CHOICES)  # 보낸 사람의 타입 (User 또는 Character)
     user_sender = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)  # 사용자 ID (참조: users 테이블)

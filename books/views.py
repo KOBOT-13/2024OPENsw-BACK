@@ -20,3 +20,4 @@ class BookCharactersAPIView(generics.ListAPIView):
     def get_queryset(self):
         book_id = self.kwargs['book_id']
         return Character.objects.filter(book_id=book_id)
+

@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import User
+from django.conf import settings
 
 class Book(models.Model):
     id = models.AutoField(primary_key=True) # id
@@ -34,5 +34,5 @@ class Post(models.Model):
     body = models.TextField(max_length=3000) # 게시글 내용 (3000자 이내)
     likes = models.PositiveIntegerField(default=0) # 좋아요 수
     post_date = models.DateTimeField(auto_now_add=True) # 게시글 발행일자
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # 사용자 ID (참조: users 테이블)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자 ID (참조: users 테이블)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)  # 책 ID (참조: books 테이블)

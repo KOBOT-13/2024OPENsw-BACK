@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>page</title>
+</head>
+<body>
+    <h1>Real-time page</h1>
+    <button onclick="startRecording()">Start Recording</button>
+    <button onclick="stopRecording()">Stop Recording</button>
+    <div id="transcript"></div>
+
+    <script>
+        let ws;
+        let mediaRecorder;
+
+        function startRecording() {
+            ws = new WebSocket('ws://' + window.location.host + '/ws/page/');
+            
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                document.getElementById('transcript').innerText += data.transcript + '\n';
+            };
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = function(event) {
+                        if (event.data.size > 0) {
+                            ws.send(event.data);
+                        }
+                    };
+                    mediaRecorder.start(250); // Send data every 250ms
+                });
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            ws.close();
+        }
+    </script>
+</body>
+</html>

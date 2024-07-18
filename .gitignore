@@ -486,9 +486,11 @@ $RECYCLE.BIN/
 secret.json
 migrations/
 migrations/*
-
+templates/
+templates/*
 
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python,visualstudiocode,pycharm,git,macos,venv,windows
 
 
+/templates/

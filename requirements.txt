@@ -6,7 +6,9 @@ charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
 distro==1.9.0
+dj-rest-auth==6.0.0
 Django==5.0.6
+django-allauth==0.63.6
 djangorestframework==3.15.2
 djangorestframework-simplejwt==5.3.1
 drf-yasg==1.21.7
@@ -20,6 +22,7 @@ inflection==0.5.1
 jsonpointer==3.0.0
 openai==1.35.14
 packaging==24.1
+pillow==10.4.0
 psycopg2-binary==2.9.9
 pydantic==2.8.2
 pydantic_core==2.20.1

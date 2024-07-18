@@ -3,13 +3,18 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 
 router = DefaultRouter()
-# DefaultRouter는 RESTful API의 라우팅을 자동으로 처리해주는 편리한 도구입니다
-# ex) router.register('pages', PageViewSet, basename = 'PageViewSet')
-
 
 urlpatterns = [
     path('', include(router.urls)),
-    # ex) path('pages/<int:year>/', AllPagesView.as_view(), name='all-pages-list'),
 
+    # allauth
+    path('accounts/', include('allauth.urls')),
 
+    # dj-rest-auth
+    path('auth/', include('dj_rest_auth.urls')),
+    path('auth/registration/', include('dj_rest_auth.registration.urls')),
+    # path('kakao-login/', kakao_login_view, name='kakao-login'),
+    # path('kakao-user-info/', kakao_user_info, name='kakao-user-info'),
+
+    path('profile/', ProfileView.as_view(), name='profile'),  # 프로필 URL 추가
 ]

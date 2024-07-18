@@ -6,6 +6,11 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = '__all__'
 
+class MainPageBookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = ['book_id', 'title', 'cover_image']
+
 class CharacterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Character

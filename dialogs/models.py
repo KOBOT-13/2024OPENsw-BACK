@@ -1,5 +1,5 @@
 from django.db import models
-from django.conf import settings  # Assuming you are using Django's built-in User model
+from django.conf import settings
 from books.models import Book, Character
 
 class Conversation(models.Model):

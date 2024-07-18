@@ -22,6 +22,7 @@ class Character(models.Model):
     name = models.CharField(max_length=100)  # 등장인물 이름
     description = models.TextField(blank=True)  # 등장인물 설명
     character_image = models.ImageField(upload_to='character_image/', blank=True, null=True)  # 등장인물 사진
+    greeting = models.CharField(max_length=200) # 등장인물 인사말
     book = models.ForeignKey(Book, related_name='characters', on_delete=models.CASCADE)  # 책과의 관계
 
     def __str__(self):

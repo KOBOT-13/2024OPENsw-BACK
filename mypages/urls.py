@@ -10,5 +10,6 @@ urlpatterns = [
     path('', include(router.urls)),
     # ex) path('pages/<int:year>/', AllPagesView.as_view(), name='all-pages-list'),
 
+    path('quiz_record', QuizRecordListView.as_view(), name='quiz-record-list'),
 
 ]

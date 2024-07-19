@@ -489,6 +489,8 @@ migrations/*
 templates/
 templates/*
 
+#Environments
+.env
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python,visualstudiocode,pycharm,git,macos,venv,windows
 

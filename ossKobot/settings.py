@@ -140,7 +140,7 @@ ROOT_URLCONF = 'ossKobot.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'dialogs', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -224,6 +224,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer'
     ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
@@ -294,3 +295,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# 나중에 배포할 때 제거해야 함
+GOOGLE_APPLICATION_CREDENTIALS = "/home/user/바탕화면/KOBOT/동화책/2024OpenSW-BACK/plucky-mile-429805-v8-f885acb75bbc.json"
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS
+
+NCP_CLIENT_ID = '6hsjyw687f'
+NCP_CLIENT_SECRET = 'd1yWXS0jPb1AhNAZbB3EAmDYjFDcMu0lGSzn2lhV'

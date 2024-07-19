@@ -3,7 +3,7 @@ from books.models import Book
 
 class Quiz(models.Model):
     id = models.AutoField(primary_key=True) # 퀴즈 ID
-
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
     quiz_text = models.TextField()  # 질문 텍스트
     answer = models.IntegerField()  # 정답 (선지번호)
     option_one = models.CharField(max_length=200)  # 선택지 1

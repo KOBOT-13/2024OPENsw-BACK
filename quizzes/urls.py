@@ -4,7 +4,6 @@ from .views import *
 
 router = DefaultRouter()
 router.register('quiz', QuizViewSet, basename= 'QuizViewSet')
-router.register('question', QuesitonViewSet, basename='QuestionViewSet')
 
 urlpatterns = [
     path('', include(router.urls)),

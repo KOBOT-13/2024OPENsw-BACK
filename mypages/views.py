@@ -15,6 +15,7 @@ class QuizRecordViewSet(viewsets.ModelViewSet):
 class ConversationRecordViewSet(viewsets.ModelViewSet):
     queryset = ConversationRecord.objects.all()
     serializer_class = ConversationRecordSerializer
+
 class QuizRecordListView(generics.ListAPIView):
     serializer_class = QuizRecordSerializer
     permission_classes = [IsAuthenticated]
@@ -22,3 +23,23 @@ class QuizRecordListView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return QuizRecord.objects.filter(user=user).select_related('quiz').order_by('-completed_at')
+
+class SaveQuizRecordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, quiz_id):
+        user = request.user
+        quiz = Quiz.objects.get(id=quiz_id)
+        score = request.data.get('score')
+        completed_at = timezone.now() # 현재 시간
+        
+        quiz_record = QuizRecord.objects.create(
+            user=user,
+            quiz=quiz,
+            score=score,
+            completed_at=completed_at,
+            book_title=quiz.book.title,
+            book_cover_image=quiz.book.cover_image
+        )
+        
+        return Response({'message': 'Quiz record saved successfully'}, status=status.HTTP_201_CREATED)

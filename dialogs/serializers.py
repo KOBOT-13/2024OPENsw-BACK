@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Conversation, Message
+from .models import Conversation, Message, AudioText
 
 class ConversationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,3 +27,7 @@ class MessageSerializer(serializers.ModelSerializer):
 
         return data
 
+class AudioTextSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AudioText
+        fields = '__all__'

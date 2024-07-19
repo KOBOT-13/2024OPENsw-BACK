@@ -31,3 +31,30 @@ class Message(models.Model):
     def __str__(self):
         sender = self.user_sender if self.sender_type == 'user' else self.character_sender
         return f"Message from {sender} at {self.timestamp}"
+    
+class AudioText(models.Model):
+    id = models.AutoField(primary_key=True)
+    date = models.DateTimeField(auto_now_add=True, editable=False)
+    text = models.TextField()
+
+    def __str__(self):
+        return str(self.date)
+    
+class TTSRequest(models.Model):
+    id = models.AutoField(primary_key=True)
+    date = models.DateTimeField(auto_now_add=True, editable=False)
+    text = models.CharField(max_length=255)
+    speaker = models.CharField(max_length=50, default='nara')
+    volume = models.IntegerField(default=0)
+    speed = models.IntegerField(default=0)
+    pitch = models.IntegerField(default=0)
+    emotion = models.IntegerField(default=0)
+    emotion_strength = models.IntegerField(default=0)
+    format = models.CharField(max_length=10, default='mp3')
+    alpha = models.IntegerField(default=0)
+    end_pitch = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    tts_file = models.FileField(upload_to='tts/', null=True, blank=True)
+
+    def __str__(self):
+        return f"TTS Request - {self.text[:20]}"

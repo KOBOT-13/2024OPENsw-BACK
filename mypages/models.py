@@ -13,12 +13,3 @@ class QuizRecord(models.Model):
     def __str__(self):
         return f'{self.user.username} - {self.quiz} - {self.score}'
 
-class ConversationRecord(models.Model):
-    id = models.AutoField(primary_key=True) # 대화 기록 ID, 고유 식별자
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE) # 사용자 ID (참조: User 테이블)
-    conversation = models.ForeignKey('dialogs.Conversation', on_delete=models.CASCADE) # 대화 ID (참조: Conversation 테이블)
-    completed_at = models.DateTimeField()  # 대화를 완료한 날짜와 시간
-
-    def __str__(self):
-        return f'{self.user.username} - {self.conversation}'
-

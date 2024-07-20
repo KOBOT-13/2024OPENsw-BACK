@@ -4,17 +4,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import *
-from .models import QuizRecord, ConversationRecord
+from .models import QuizRecord
 from quizzes.models import Quiz
 from django.utils import timezone
 
 class QuizRecordViewSet(viewsets.ModelViewSet):
     queryset = QuizRecord.objects.all()
     serializer_class = QuizRecordSerializer
-
-class ConversationRecordViewSet(viewsets.ModelViewSet):
-    queryset = ConversationRecord.objects.all()
-    serializer_class = ConversationRecordSerializer
 
 class QuizRecordListView(generics.ListAPIView):
     serializer_class = QuizRecordSerializer

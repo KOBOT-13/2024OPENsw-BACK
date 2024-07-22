@@ -88,23 +88,23 @@ http://127.0.0.1:8000/??????
 해당 URL로 접속하여 api를 확인하고 사용할 수 있습니다.
 
 ## 프로젝트 구성📦📂📜 
-📦2024OpenSW-BACK 
-┣📦ossKobot(config) 
-┃ ┣ 📜__init__.py 
-┃ ┣ 📜asgi.py 
-┃ ┣ 📜setting.py 
-┃ ┣ 📜urls.py 
-┃ ┗ 📜wsgi.py 
-┣📦book 
-┃ ┣ 📜__init__.py 
-┃ ┣ 📜admin.py 
-┃ ┣ 📜apps.py 
-┃ ┣ 📜models.py 
-┃ ┣ 📜serializers.py 
-┃ ┣ 📜tests.py 
-┃ ┗ 📜urls.py 
-┣ 📜.env 
-┗ 📜.gitignore 
+📦2024OpenSW-BACK  
+┣📦ossKobot(config)  
+┃ ┣ 📜__init__.py  
+┃ ┣ 📜asgi.py  
+┃ ┣ 📜setting.py  
+┃ ┣ 📜urls.py  
+┃ ┗ 📜wsgi.py  
+┣📦book  
+┃ ┣ 📜__init__.py  
+┃ ┣ 📜admin.py  
+┃ ┣ 📜apps.py  
+┃ ┣ 📜models.py  
+┃ ┣ 📜serializers.py  
+┃ ┣ 📜tests.py  
+┃ ┗ 📜urls.py  
+┣ 📜.env  
+┗ 📜.gitignore  
  
 ## Team
 

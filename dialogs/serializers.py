@@ -2,9 +2,18 @@ from rest_framework import serializers
 from .models import Conversation, Message
 
 class ConversationSerializer(serializers.ModelSerializer):
+    book_title = serializers.SerializerMethodField()
+    character_name = serializers.SerializerMethodField()
     class Meta:
         model = Conversation
-        fields = '__all__'
+        fields = ['id','book_title', 'character_name', 'created_at']
+
+    def get_book_title(self, obj):
+        return obj.book.title
+
+    def get_character_name(self, obj):
+        return obj.character.name
+
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:

@@ -3,7 +3,7 @@ from django.conf import settings
 from books.models import Book, Character
 
 class Conversation(models.Model):
-    conversation_id = models.AutoField(primary_key=True)  # 대화 ID
+    id = models.AutoField(primary_key=True)  # 대화 ID
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # 사용자 ID (참조: users 테이블)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)  # 책 ID (참조: books 테이블)
     character = models.ForeignKey(Character, on_delete=models.CASCADE)  # 등장인물 ID (참조: character 테이블)

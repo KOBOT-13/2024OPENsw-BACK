@@ -38,7 +38,7 @@ characters = character_map[character_key]
 
 
 # 챗봇 함수 정의
-
+# input message 어떻게 변경할지 + DB 에 대화 내용 넣기 + 출력 메세지는 어디로 보낼지 ... 
 def chatbot(input_message):
     try:
         

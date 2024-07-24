@@ -5,11 +5,13 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from rest_framework import status, viewsets, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
-from .chat_utils.py import *
+from .chat_utils import *
+from .models import *
 
 # Create your views here.
 class ConversationViewSet(viewsets.ModelViewSet):
@@ -35,11 +37,11 @@ class UserMessageView(APIView):
             print(input_message)
             bot_response = chatbot(input_message)
 
-            if isinstance(bot_response, JsonResponse):
-                bot_response_data = json.loads(bot_response.content)
-                bot_response_message = bot_response_data.get('message')
-            else:
-                return Response({'error': 'Invalid response from chatbot function'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            # if isinstance(bot_response, JsonResponse):
+            #     bot_response_data = json.loads(bot_response.content)
+            #     bot_response_message = bot_response_data.get('message')
+            # else:
+            #     return Response({'error': 'Invalid response from chatbot function'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             # TTS 파라미터 설정
             tts_params = {
@@ -52,7 +54,7 @@ class UserMessageView(APIView):
                 'format': data.get('format', 'mp3'),
                 'alpha': int(data.get('alpha', 0)),
                 'end_pitch': int(data.get('end_pitch', 0)),
-                'text': bot_response_message
+                'text': bot_response
             }
 
             # TTSRequest 생성

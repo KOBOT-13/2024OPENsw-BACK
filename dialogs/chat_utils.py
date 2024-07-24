@@ -1,23 +1,28 @@
 import os
-from openai import OpenAI
-from langchain.memory import ConversationSummaryMemory
-from langchain_openai import ChatOpenAI
+import json
+from django.http import JsonResponse, HttpRequest
+from django.views.decorators.csrf import csrf_exempt
+import openai
+# from openai import OpenAI
+# from langchain.memory import ConversationSummaryMemory
+# from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 
+# 환경 변수 로드
 load_dotenv()
+api_key = os.getenv('OPENAI_API_KEY')
+if not api_key:
+    raise ValueError("API key for OpenAI is not set")
 
-api_key = os.getenv('api_key')
+# OpenAI 클라이언트 설정
+openai.api_key = api_key
 
-chat_model = ChatOpenAI(openai_api_key=api_key)
+# memory = ConversationSummaryMemory(
+#     llm= ChatOpenAI(temperature = 0), return_messages=True)
 
-os.environ["OPENAI_API_KEY"] = api_key
+# client = OpenAI()
 
-#대화 내용 요약 
-memory = ConversationSummaryMemory(
-    llm= ChatOpenAI(temperature = 0), return_messages=True)
-
-client = OpenAI()
-
+# Character 설정
 character_key = 1
 
 # 대화 기록
@@ -40,60 +45,22 @@ characters = character_map[character_key]
 # 챗봇 함수 정의
 # input message 어떻게 변경할지 + DB 에 대화 내용 넣기 + 출력 메세지는 어디로 보낼지 ... 
 def chatbot(input_message):
-    try:
-        
-        model = "gpt-3.5-turbo"
-       
-        convo_history.append({"role": "user", "content": input_message})
-        
-        
-        messages = [
-                {   "role":"system",
-                     "content": characters
-                     },
-                {
-                    "role": "user",
-                    "content": input_message,
-                }
-            ]
-        
+    messages = [
+        {"role": "system", "content": characters},
+        {"role": "user", "content": input_message}
+    ]
 
-        # OpenAI API 호출
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=0
-        )
+    # OpenAI API 호출
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        temperature=0
+    )
 
-        # 응답 메시지 추출
-        if response.choices:
-            bot_response = response.choices[0].message.content
-        else:
-            bot_response = "No response from the model"
-        convo_history.append({"role": "assistant", "content": bot_response})
-        memory.save_context(
-            inputs= { "user" : input_message},
-            outputs={"assistant" : bot_response})
-        return bot_response
+    # 응답 메시지 추출
+    if response.choices:
+        bot_response = response.choices[0].message['content']
+    else:
+        bot_response = "No response from the model"
 
-    except Exception as e:
-        return f"Error: {str(e)}"
-
-# 메인 함수 (챗봇 실행)
-if __name__ == "__main__":
-    print("챗봇을 시작합니다. 종료하려면 '그만'이라고 입력하세요.")
-    
-    while True:
-        user_input = input("사용자: ")
-
-        # 종료 조건 설정 --> (프론트에서 창을 나가면 받는 값으로 설정해주면 될 듯 합니다.~)
-        if user_input.lower() == '그만':
-            print("챗봇을 종료합니다.")
-            
-            #대화 내용 요약 출력
-            print(memory.load_memory_variables({})["history"])
-            break
-
-        # 챗봇 함수 호출 및 응답 출력
-        bot_response = chatbot(user_input)
-        print(f"챗봇: {bot_response}")
+    return bot_response

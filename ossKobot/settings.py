@@ -214,7 +214,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # SECURE_HSTS_PRELOAD = True
 # SECURE_BROWSER_XSS_FILTER = True
 # X_FRAME_OPTIONS = 'DENY'
-
 """
 
 REST_FRAMEWORK = {
@@ -224,6 +223,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',

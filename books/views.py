@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets, generics
@@ -25,6 +25,7 @@ class BookCharactersAPIView(generics.ListAPIView):
         return Character.objects.filter(book_id=book_id)
 
 class MainPageAllBooksAPIView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         books = Book.objects.all()
         serializer = BookSerializer(books, many=True)

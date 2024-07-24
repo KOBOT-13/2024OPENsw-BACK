@@ -493,5 +493,5 @@ templates/*
 # End of https://www.toptal.com/developers/gitignore/api/django,python,visualstudiocode,pycharm,git,macos,venv,windows
 
 
-/templates/.
+/templates/
 delete_migrations.py

@@ -39,7 +39,7 @@ class MessageAPIView(generics.ListAPIView):
         return Message.objects.filter(conversation_id = conversation_id)
     
     
-class UserMessageView(APIView):
+class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt의 대답(TTS파일 포함)을 저장합니다.
     def post(self, request):
         if not request.user.is_authenticated:
             return Response({'error': 'User not authenticated'}, status=status.HTTP_403_FORBIDDEN)
@@ -67,7 +67,6 @@ class UserMessageView(APIView):
 
             if not input_message:
                 return Response({'error': 'No message provided'}, status=status.HTTP_400_BAD_REQUEST)
-            print(input_message)
             bot_response = chatbot(input_message)
 
 

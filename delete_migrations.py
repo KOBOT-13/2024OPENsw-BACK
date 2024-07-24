@@ -2,7 +2,7 @@ import os
 import glob
 
 # 프로젝트 루트 디렉토리로 변경
-os.chdir('C:/Users/fores/Documents/Github/2024OpenSW-BACK') #여기에 본인의 디렉토리를 넣어주면 됩니다. 저는 터미널에서 복붙했어요
+os.chdir('/home/user/바탕화면/KOBOT/동화책/2024OpenSW-BACK') #여기에 본인의 디렉토리를 넣어주면 됩니다. 저는 터미널에서 복붙했어요
 
 # 앱 디렉토리 리스트
 apps = ['books', 'dialogs', 'users', 'mypages', 'quizzes']  # 여기에 앱 이름 추가

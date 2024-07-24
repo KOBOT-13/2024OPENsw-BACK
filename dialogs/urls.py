@@ -11,5 +11,5 @@ urlpatterns = [
     path('<int:conversation_id>/messages/', MessageAPIView.as_view(), name='conversation-messages'),
     # ex) path('pages/<int:year>/', AllPagesView.as_view(), name='all-pages-list'),
 
-
+    path('user_message/', UserMessageView.as_view(), name='user_message'),
 ]

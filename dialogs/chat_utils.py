@@ -2,10 +2,10 @@ import os
 import json
 from django.http import JsonResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
-import openai
-# from openai import OpenAI
-# from langchain.memory import ConversationSummaryMemory
-# from langchain_openai import ChatOpenAI
+# import openai
+from openai import OpenAI
+from langchain.memory import ConversationSummaryMemory
+from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 
 # 환경 변수 로드
@@ -15,12 +15,17 @@ if not api_key:
     raise ValueError("API key for OpenAI is not set")
 
 # OpenAI 클라이언트 설정
-openai.api_key = api_key
+# openai.api_key = api_key
 
-# memory = ConversationSummaryMemory(
-#     llm= ChatOpenAI(temperature = 0), return_messages=True)
+chat_model = ChatOpenAI(openai_api_key=api_key)
 
-# client = OpenAI()
+
+os.environ["OPENAI_API_KEY"] = api_key
+
+memory = ConversationSummaryMemory(
+    llm= ChatOpenAI(temperature = 0), return_messages=True)
+
+client = OpenAI()
 
 # Character 설정
 character_key = 1
@@ -51,7 +56,7 @@ def chatbot(input_message):
     ]
 
     # OpenAI API 호출
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages,
         temperature=0
@@ -59,7 +64,7 @@ def chatbot(input_message):
 
     # 응답 메시지 추출
     if response.choices:
-        bot_response = response.choices[0].message['content']
+        bot_response = response.choices[0].message.content
     else:
         bot_response = "No response from the model"
 

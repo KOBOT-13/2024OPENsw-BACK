@@ -494,3 +494,4 @@ templates/*
 
 
 /templates/
+delete_migrations.py

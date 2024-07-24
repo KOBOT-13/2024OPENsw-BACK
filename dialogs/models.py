@@ -27,6 +27,7 @@ class Message(models.Model):
     character_sender = models.ForeignKey(Character, null=True, blank=True, on_delete=models.CASCADE)  # 등장인물 ID (참조: character 테이블)
     message = models.TextField()  # 대화 내용
     timestamp = models.DateTimeField(auto_now_add=True)  # 대화가 발생한 시간
+    tts_file = models.FileField(upload_to='tts/', null=True, blank=True)
 
     def __str__(self):
         sender = self.user_sender if self.sender_type == 'user' else self.character_sender

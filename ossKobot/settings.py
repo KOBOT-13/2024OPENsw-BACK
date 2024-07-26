@@ -100,9 +100,20 @@ REST_AUTH = {
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'none' # 필요하게 설정할꺼면 나중에 mandatory 로 바꾸면 됨.
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # 필요하게 설정할꺼면 나중에 mandatory 로 바꾸면 됨.
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = get_secret("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = get_secret("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+ACCOUNT_EMAIL_CONFIRMATION_TEMPLATE = 'templates/account/email/email_confirmation_signup_message.html'  # 사용자 정의 템플릿 경로
+ACCOUNT_EMAIL_CONFIRMATION_HTML_TEMPLATE = 'account/email/email_confirmation_signup_message.html'  # 사용자 정의 템플릿 경로
 
 SOCIALACCOUNT_PROVIDERS = {
     'kakao': {

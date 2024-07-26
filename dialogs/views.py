@@ -12,7 +12,6 @@ from django.core.exceptions import ImproperlyConfigured
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status   
-from dotenv import load_dotenv
 from .serializers import *
 from .chat_utils  import *
 from books.models import Character
@@ -94,9 +93,8 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             )
 
             # TTS API 호출
-            load_dotenv()
-            client_id = os.getenv('CLOVA_CLIENT_ID')
-            client_secret = os.getenv('CLOVA_CLIENT_SECRET')
+            client_id = settings.CLOVA_CLIENT_ID
+            client_secret = settings.CLOVA_CLIENT_SECRET
             if not client_id or not client_secret:
                 raise ImproperlyConfigured("CLOVA client credentials are not set.")
             

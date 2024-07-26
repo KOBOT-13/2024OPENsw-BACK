@@ -140,7 +140,7 @@ ROOT_URLCONF = 'ossKobot.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'dialogs', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -214,6 +214,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # SECURE_HSTS_PRELOAD = True
 # SECURE_BROWSER_XSS_FILTER = True
 # X_FRAME_OPTIONS = 'DENY'
+
 """
 
 REST_FRAMEWORK = {
@@ -223,7 +224,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer'
     ),
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
@@ -237,7 +238,7 @@ REST_FRAMEWORK = {
 
 # 추가적인 JWT_AUTH 설정
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7), # 나중에 배포 전에 액세스 토큰 시간 줄이기 minutes=30
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
@@ -294,3 +295,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
+CLOVA_CLIENT_ID = get_secret("CLOVA_CLIENT_ID")
+CLOVA_CLIENT_SECRET = get_secret("CLOVA_CLIENT_SECRET")

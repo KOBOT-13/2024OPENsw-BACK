@@ -5,11 +5,10 @@ from django.views.decorators.csrf import csrf_exempt
 from openai import OpenAI
 from langchain.memory import ConversationSummaryMemory
 from langchain_openai import ChatOpenAI
-from dotenv import load_dotenv
+from django.conf import settings
 
 # 환경 변수 로드
-load_dotenv()
-api_key = os.getenv('OPENAI_API_KEY')
+api_key = settings.OPENAI_API_KEY
 if not api_key:
     raise ValueError("API key for OpenAI is not set")
 

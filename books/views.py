@@ -1,9 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, viewsets, generics
+from rest_framework import status, viewsets, generics, permissions
+
+from .models import *
 from .serializers import *
 from django.conf import settings
 
@@ -38,3 +43,86 @@ class MainPageMybooksAPIView(APIView):
         my_books = user.mybook_list.all()
         serializer = MainPageBookSerializer(my_books, many=True)
         return Response(serializer.data)
+
+class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None): # 독후감에 대한 좋아요
+        post = self.get_object()
+        user = request.user
+        if user in post.likes.all():
+            post.likes.remove(user)
+            return Response({'status': 'post unliked'})
+        else:
+            post.likes.add(user)
+            return Response({'status': 'post liked'})
+
+    @action(detail=True, methods=['get'])
+    def liked_users(self, request, pk=None): # 독후감에 대해 좋아요 한 사람들 조회.
+        post = self.get_object()
+        liked_users = post.likes.all()
+        liked_users_data = [{'id': user.id, 'username': user.username} for user in liked_users]
+        return Response({'liked_users': liked_users_data})
+
+
+class AllPostByBookView(ListAPIView): # 특정 책에 대한 모든 독후감
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        book_id = self.kwargs['book_id']
+        return Post.objects.filter(book_id=book_id)
+
+class AllPostByUserView(ListAPIView): # 특정 유저에 대한 모든 독후감
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Post.objects.filter(user=user)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None):
+        comment = self.get_object()
+        user = request.user
+        if user in comment.likes.all():
+            comment.likes.remove(user)
+            return Response({'status': 'comment unliked'})
+        else:
+            comment.likes.add(user)
+            return Response({'status': 'comment liked'})
+
+    @action(detail=True, methods=['get'])
+    def liked_users(self, request, pk=None):
+        comment = self.get_object()
+        liked_users = comment.likes.all()
+        liked_users_data = [{'id': user.id, 'username': user.username} for user in liked_users]
+        return Response({'liked_users': liked_users_data})
+
+class AllCommentsByBookView(ListAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        book_id = self.kwargs['book_id']
+        return Comment.objects.filter(book_id=book_id)
+
+class AllCommentsByUserView(ListAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Comment.objects.filter(user=user)

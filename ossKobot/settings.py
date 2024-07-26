@@ -89,7 +89,7 @@ REST_AUTH = {
     'JWT_AUTH_HTTPONLY': True,
     'JWT_AUTH_COOKIE' : "access_token",
     'JWT_AUTH_REFRESH_COOKIE' : "refresh_token",
-    'JWT_AUTH_COOKIE_USE_CSRF' : True,
+    'JWT_AUTH_COOKIE_USE_CSRF' : False,
     'SESSION_LOGIN' : False
 }
 
@@ -103,16 +103,6 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none' # 필요하게 설정할꺼면 나중에 mandatory 로 바꾸면 됨.
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True
-
-SOCIALACCOUNT_PROVIDERS = {
-    'kakao': {
-        'APP': {
-            'client_id': '35e3a75771e92a596518518719f8d59f',
-            'secret': 'mOkb8h7AxH4XuZtfzi7VFSrOMMuv303r',
-            'key': ''
-        }
-    }
-}
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -173,6 +163,16 @@ DATABASES = {
     }
 }
 
+# 카카오톡
+# SOCIALACCOUNT_PROVIDERS = {
+#     'kakao': {
+#         'APP': {
+#             'client_id': '',
+#             'secret': '',
+#             'key': ''
+#         }
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

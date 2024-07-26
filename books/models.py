@@ -24,6 +24,16 @@ class Character(models.Model):
     greeting = models.CharField(max_length=200) # 등장인물 인사말
     book = models.ForeignKey(Book, related_name='characters', on_delete=models.CASCADE)  # 책과의 관계
 
+    speaker = models.CharField(max_length=100)
+    volume = models.IntegerField(default=0)
+    speed = models.IntegerField(default=0)
+    pitch = models.IntegerField(default=0)
+    emotion = models.IntegerField(default=0)
+    emotion_strength = models.IntegerField(default=0)
+    format = models.CharField(max_length=10, default="mp3")
+    alpha = models.IntegerField(default=0)
+    end_pitch = models.IntegerField(default=0)
+        
     def __str__(self):
         return self.name
 

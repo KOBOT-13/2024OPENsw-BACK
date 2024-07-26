@@ -41,7 +41,7 @@ CREATE USER ('유저명') WITH PASSWORD ('비밀번호');
 ALTER ROLE ('유저명') SET client_encoding TO 'utf8';
 ALTER ROLE ('유저명') SET default_transaction_isolation TO 'read committed';
 ALTER ROLE ('유저명') SET TIME ZONE 'Asia/Seoul';
-GRANT ALL PRIVILEGES ON DATABASE data_planet_db TO root;
+GRANT ALL PRIVILEGES ON DATABASE ('데이터베이스 이름') TO ('유저명');
 ALTER USER ('유저명') SUPERUSER;
 ```
 secret.json 파일에 설정되어 있는 '데이터베이스 이름', '유저명', '비밀번호'를 보고  

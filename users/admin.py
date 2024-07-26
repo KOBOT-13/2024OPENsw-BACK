@@ -8,7 +8,7 @@ class BookInline(admin.TabularInline):
     extra = 1
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('email', 'username', 'is_staff', 'is_active')
+    list_display = ('email', 'username', 'is_staff', 'is_active', 'is_verified')
     list_filter = ('is_staff', 'is_active')
     fieldsets = (
         (None, {'fields': ('email', 'username', 'password')}),

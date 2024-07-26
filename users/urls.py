@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
+from allauth.account.views import confirm_email
 
 router = DefaultRouter()
 
@@ -13,6 +14,8 @@ urlpatterns = [
     # dj-rest-auth
     path('auth/', include('dj_rest_auth.urls')),
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
+    path("auth/registration/account-confirm-email/<str:key>", CustomConfirmEmailView.as_view(),
+        name="account_confirm_email"),
     # path('kakao-login/', kakao_login_view, name='kakao-login'),
     # path('kakao-user-info/', kakao_user_info, name='kakao-user-info'),
 

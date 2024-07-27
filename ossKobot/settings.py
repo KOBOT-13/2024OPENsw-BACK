@@ -104,6 +104,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # 필요하게 설정할꺼면 나중�
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
+ACCOUNT_ADAPTER = 'users.adapter.CustomAccountAdapter'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -114,6 +115,10 @@ EMAIL_HOST_PASSWORD = get_secret("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 ACCOUNT_EMAIL_CONFIRMATION_TEMPLATE = 'templates/account/email/email_confirmation_signup_message.html'  # 사용자 정의 템플릿 경로
 ACCOUNT_EMAIL_CONFIRMATION_HTML_TEMPLATE = 'account/email/email_confirmation_signup_message.html'  # 사용자 정의 템플릿 경로
+ACCOUNT_RATE_LIMITS = { # 이메일 인증 재전송에 대한 속도 제한 설정
+    'confirm_email': '5/m'
+}
+
 
 SOCIALACCOUNT_PROVIDERS = {
     'kakao': {

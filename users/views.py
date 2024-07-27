@@ -1,11 +1,17 @@
 from django.contrib.sites import requests
 from django.http import JsonResponse
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from allauth.account.views import ConfirmEmailView
 from allauth.account.models import EmailConfirmationHMAC
+from allauth.account.models import EmailAddress
+from rest_framework import status
+from dj_rest_auth.views import LoginView
+from django.contrib.auth import authenticate, login
+
+from users.adapter import CustomAccountAdapter
+
 
 
 class ProfileView(APIView):
@@ -18,7 +24,6 @@ class ProfileView(APIView):
             'username': user.username,
             'is_staff': user.is_staff
         })
-
 
 class CustomConfirmEmailView(ConfirmEmailView):
     template_name = 'account/email/success_verify_email.html'
@@ -52,6 +57,84 @@ class CustomConfirmEmailView(ConfirmEmailView):
                 print(f'EmailConfirmation not found for key: {key}')
         
         return super().dispatch(request, *args, **kwargs)
+
+
+
+class CustomLoginView(LoginView):
+    def post(self, request, *args, **kwargs):
+        print('custom login view call')
+
+        # 요청에서 email과 password 가져오기
+        email = request.data.get('email')  # 이메일 필드
+        password = request.data.get('password')  # 비밀번호 필드
+        print(email)
+        print(password)
+
+        # 이메일로 사용자 인증
+        user = authenticate(request, username=email, password=password)
+
+        if user is not None:
+            # 이메일 주소로 사용자 가져오기
+            email_address = EmailAddress.objects.filter(email=email, primary=True).first()
+            if email_address and not email_address.verified:
+                
+                # 이메일 주소가 인증되지 않은 경우
+                adapter = CustomAccountAdapter()
+                adapter.send_email_confirmation(request, user)  # 인증 이메일 재전송
+                return Response(
+                    {"detail": "이메일 인증이 필요합니다. 인증 이메일이 재전송되었습니다."},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+
+            # 이메일 인증이 완료된 경우 로그인
+            login(request, user)
+            return Response({"detail": "로그인 성공"}, status=status.HTTP_200_OK)
+        else:
+            # 로그인 실패 시 처리
+            return Response(
+                {"detail": "이메일 주소 또는 비밀번호가 잘못되었습니다."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    
+# class CustomLoginView(LoginView):
+#     def post(self, request, *args, **kwargs):
+#         print('custom login view call')
+#         # 요청에서 email과 password 가져오기
+#         email = request.data.get('email')  # 이메일 필드
+#         password = request.data.get('password')  # 비밀번호 필드
+#         print(email)
+#         print(password)
+#         # 기본 로그인 기능 수행
+#         response = super().post(request, *args, **kwargs)
+#         print('debug1')
+#         # 로그인 실패 시 처리
+#         if response.status_code == status.HTTP_400_BAD_REQUEST:
+#             print('debug2')
+#             # 응답에서 non_field_errors를 확인
+#             if 'non_field_errors' in response.data:
+#                 for error in response.data['non_field_errors']:
+#                     if "이메일 주소가 확인되지 않았습니다." in error:
+#                         try:
+#                             # 이메일 주소로 사용자 가져오기
+#                             email_address = EmailAddress.objects.get(email=email, primary=True)
+                            
+#                             # 이메일 주소가 인증되지 않은 경우
+#                             if email_address and not email_address.verified:
+#                                 user = email_address.user
+#                                 send_email_confirmation(request, user)  # 인증 이메일 재전송
+#                                 return Response(
+#                                     {"detail": "이메일 인증이 필요합니다. 인증 이메일이 재전송되었습니다."},
+#                                     status=status.HTTP_401_UNAUTHORIZED
+#                                 )
+#                         except EmailAddress.DoesNotExist:
+#                             return Response(
+#                                 {"detail": "이메일 주소가 존재하지 않습니다."},
+#                                 status=status.HTTP_400_BAD_REQUEST
+#                             )
+
+#         return response  # 로그인 성공 또는 다른 에러에 대한 응답 반환
+    
 
 #카카오톡 로그인 뷰
 """from django.shortcuts import render

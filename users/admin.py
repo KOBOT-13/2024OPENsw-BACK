@@ -7,16 +7,16 @@ class BookInline(admin.TabularInline):
     extra = 1
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('email', 'username', 'is_staff', 'is_active', 'is_verified')
+    list_display = ('email', 'username', 'birth_date', 'is_staff', 'is_active', 'is_verified')
     list_filter = ('is_staff', 'is_active')
     fieldsets = (
-        (None, {'fields': ('email', 'username', 'password')}),
+        (None, {'fields': ('email', 'username', 'birth_date','password')}),
         ('Permissions', {'fields': ('is_staff', 'is_active', 'is_superuser')}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'username', 'password1', 'password2', 'is_staff', 'is_active', 'is_superuser')}
+            'fields': ('email', 'username', 'birth_date','password1', 'password2', 'is_staff', 'is_active', 'is_superuser')}
         ),
     )
     search_fields = ('email', 'username')

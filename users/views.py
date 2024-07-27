@@ -9,21 +9,29 @@ from allauth.account.models import EmailAddress
 from rest_framework import status
 from dj_rest_auth.views import LoginView
 from django.contrib.auth import authenticate, login
-
 from users.adapter import CustomAccountAdapter
+from rest_framework import generics
+from .serializers import CustomUserSerializer 
+from allauth.account.utils import send_email_confirmation
 
+class RegisterView(generics.CreateAPIView):
+    serializer_class = CustomUserSerializer
 
+    def perform_create(self, serializer):
+        user = serializer.save()  # 사용자를 저장합니다.
 
-class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+        # 이메일 주소를 가져옵니다.
+        email_address = EmailAddress.objects.create(user=user, email=user.email, primary=True, verified=False)
+        
+        # 이메일 인증 링크를 보내는 함수 호출
+        self.send_email_confirmation(user, email_address)
 
-    def get(self, request):
-        user = request.user
-        return Response({
-            'email': user.email,
-            'username': user.username,
-            'is_staff': user.is_staff
-        })
+    def send_email_confirmation(self, user, email_address):
+        request = self.request  # 현재 요청 객체를 사용합니다.
+
+        # 이메일 인증 메일 전송
+        send_email_confirmation(request, user)
+
 
 class CustomConfirmEmailView(ConfirmEmailView):
     template_name = 'account/email/success_verify_email.html'
@@ -58,8 +66,6 @@ class CustomConfirmEmailView(ConfirmEmailView):
         
         return super().dispatch(request, *args, **kwargs)
 
-
-
 class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
         print('custom login view call')
@@ -88,15 +94,25 @@ class CustomLoginView(LoginView):
 
             # 이메일 인증이 완료된 경우 로그인
             login(request, user)
-            return Response({"detail": "로그인 성공"}, status=status.HTTP_200_OK)
+            return super().post(request, *args, **kwargs)
         else:
             # 로그인 실패 시 처리
             return Response(
                 {"detail": "이메일 주소 또는 비밀번호가 잘못되었습니다."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-    
-    
+
+class ProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            'email': user.email,
+            'username': user.username,
+            'is_staff': user.is_staff
+        })
+
 # class CustomLoginView(LoginView):
 #     def post(self, request, *args, **kwargs):
 #         print('custom login view call')

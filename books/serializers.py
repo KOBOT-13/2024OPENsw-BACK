@@ -38,3 +38,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_likes_count(self, obj):
         return obj.likes.count()
+
+class BookRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BookRequest
+        fields = '__all__'

@@ -126,3 +126,8 @@ class AllCommentsByUserView(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Comment.objects.filter(user=user)
+
+class BookRequestViewSet(viewsets.ModelViewSet):
+    queryset = BookRequest.objects.all()
+    serializer_class = BookRequestSerializer
+    permission_classes = [IsAuthenticated]

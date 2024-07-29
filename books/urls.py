@@ -7,8 +7,10 @@ from rest_framework import permissions
 router = DefaultRouter()
 router.register('book', BookViewSet, basename='BookViewSet')
 router.register('character', CharacterViewSet, basename='CharacterViewSet')
-router.register(r'posts', PostViewSet, basename='post')
-router.register(r'comments', CommentViewSet, basename='comment')
+router.register('posts', PostViewSet, basename='post')
+router.register('comments', CommentViewSet, basename='comment')
+router.register('book-requests', BookRequestViewSet, basename='book-request')
+
 
 urlpatterns = [
     path('', include(router.urls)),

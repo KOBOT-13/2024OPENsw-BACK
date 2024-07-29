@@ -9,7 +9,7 @@ router.register('book', BookViewSet, basename='BookViewSet')
 router.register('character', CharacterViewSet, basename='CharacterViewSet')
 router.register('posts', PostViewSet, basename='post')
 router.register('comments', CommentViewSet, basename='comment')
-router.register('book-requests', BookRequestViewSet, basename='book-request')
+router.register('book_requests', BookRequestViewSet, basename='book_request')
 
 
 urlpatterns = [

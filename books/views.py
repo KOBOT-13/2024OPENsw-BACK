@@ -74,7 +74,7 @@ class AllPostByBookView(ListAPIView): # 특정 책에 대한 모든 독후감
 
     def get_queryset(self):
         book_id = self.kwargs['book_id']
-        return Post.objects.filter(book_id=book_id)
+        return Post.objects.filter(book_id=book_id).order_by('-post_date')
 
 class AllPostByUserView(ListAPIView): # 특정 유저에 대한 모든 독후감
     serializer_class = PostSerializer
@@ -117,7 +117,7 @@ class AllCommentsByBookView(ListAPIView):
 
     def get_queryset(self):
         book_id = self.kwargs['book_id']
-        return Comment.objects.filter(book_id=book_id)
+        return Comment.objects.filter(book_id=book_id).order_by('-created_at')
 
 class AllCommentsByUserView(ListAPIView):
     serializer_class = CommentSerializer

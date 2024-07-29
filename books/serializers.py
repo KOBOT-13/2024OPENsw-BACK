@@ -40,6 +40,8 @@ class CommentSerializer(serializers.ModelSerializer):
         return obj.likes.count()
 
 class BookRequestSerializer(serializers.ModelSerializer):
+    requested_by = serializers.ReadOnlyField(source='requested_by.username')
+
     class Meta:
         model = BookRequest
         fields = '__all__'

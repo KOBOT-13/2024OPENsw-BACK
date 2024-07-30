@@ -3,9 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 
 router = DefaultRouter()
-router.register('quiz', QuizViewSet, basename= 'QuizViewSet')
 
 urlpatterns = [
     path('', include(router.urls)),
-    # ex) path('pages/<int:year>/', AllPagesView.as_view(), name='all-pages-list'),
+    path('book_id_quizzes/<int:book_id>/', AllQuizzesByBookView.as_view(), name='book-quizzes'),
 ]

@@ -46,7 +46,7 @@ class Post(models.Model): # '독후감'
     book = models.ForeignKey(Book, related_name='post', on_delete=models.CASCADE)  # 책 ID (참조: books 테이블)
     post_date = models.DateTimeField(auto_now_add=True) # 게시글 발행일자
     update_date = models.DateTimeField(auto_now=True) # 게시글 수정일자
-    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='post_like', blank=True) # 좋아요 수
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='post_like', blank=True) # 좋아요 한 유저 ( id 로 보임 )
     body = models.TextField(max_length=3000)  # 게시글 내용 (3000자 이내)
 
     def __str__(self):
@@ -59,7 +59,7 @@ class Comment(models.Model): # '나의 생각 공유'
     content = models.TextField(max_length=500)  # 짧은 코멘트 내용 (500자 이내)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='comment_likes', blank=True)
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='comment_likes', blank=True) # 좋아요 한 유저 ( id 로 보임 )
 
     def __str__(self):
         return f'Comment by {self.user.username} on {self.book.title}'

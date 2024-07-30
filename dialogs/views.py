@@ -66,7 +66,7 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
 
             if not input_message:
                 return Response({'error': 'No message provided'}, status=status.HTTP_400_BAD_REQUEST)
-            bot_response = chatbot(input_message)
+            bot_response = chatbot(input_message, character_id)
 
 
             # TTS 파라미터 설정
@@ -123,7 +123,7 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
                     tts_request.save()
 
                     return Response({
-                        'message': 'TTS mp3 생성 성공',
+                        'message': bot_response,
                         'file_url': f"{settings.MEDIA_URL}tts/{tts_request.id}.mp3",
                         'tts_request_id': tts_request.id
                     }, status=status.HTTP_201_CREATED)

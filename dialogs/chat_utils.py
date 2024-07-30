@@ -2,13 +2,10 @@ import os
 from openai import OpenAI
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain_openai import ChatOpenAI
-from dotenv import load_dotenv
+from django.conf import settings
 
 # 환경 변수 로드
-load_dotenv()
-
-# OpenAI API 키 로드
-api_key = os.getenv('api_key')
+api_key = settings.OPENAI_API_KEY
 
 # OpenAI API 키 환경 변수에 설정
 os.environ["OPENAI_API_KEY"] = api_key
@@ -22,9 +19,6 @@ memory = ConversationSummaryBufferMemory(
 
 # OpenAI 클라이언트 초기화
 client = OpenAI()
-
-# 캐릭터 키 설정
-character_key = 1
 
 # 대화 기록
 convo_history = []
@@ -50,11 +44,10 @@ CHARACTER_MAP = {
     
 }
 
-# 캐릭터 설정
-characters = CHARACTER_MAP[character_key]
-
 # 챗봇 함수 정의
-def chatbot(input_message):
+def chatbot(input_message, char_id):
+    characters = CHARACTER_MAP[char_id]
+    
     try:
         model = "gpt-3.5-turbo"
         convo_history.append({"role": "user", "content": input_message})
@@ -94,22 +87,3 @@ def chatbot(input_message):
 
     except Exception as e:
         return f"Error: {str(e)}"
-
-# 메인 함수 (챗봇 실행)
-if __name__ == "__main__":
-    print("챗봇을 시작합니다. 종료하려면 '그만'이라고 입력하세요.")
-    
-    while True:
-        user_input = input("사용자: ")
-
-        # 종료 조건
-        if user_input.lower() == '그만':
-            print("챗봇을 종료합니다.")
-            
-            # 대화 내용 요약 출력
-            print(memory.load_memory_variables({})["history"])
-            break
-
-        # 챗봇 함수 호출 및 응답 출력
-        bot_response = chatbot(user_input)
-        print(f"챗봇: {bot_response}")

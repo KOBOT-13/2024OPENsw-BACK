@@ -9,6 +9,8 @@ from allauth.account.models import EmailAddress
 from rest_framework import status
 from dj_rest_auth.views import LoginView
 from django.contrib.auth import authenticate, login
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from users.adapter import CustomAccountAdapter
 from rest_framework import generics
 from .serializers import CustomUserSerializer 
@@ -101,6 +103,18 @@ class CustomLoginView(LoginView):
                 {"detail": "이메일 주소 또는 비밀번호가 잘못되었습니다."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class CustomLogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            refresh_token = request.data["refresh"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"detail": "로그아웃 성공"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": f"로그아웃 실패: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]

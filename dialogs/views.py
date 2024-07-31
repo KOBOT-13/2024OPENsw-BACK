@@ -50,6 +50,7 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             input_message = data.get('message')
             conversation_id = data.get('conversation_id')
             character_id = data.get('character_id')
+            summary_message_id = data.get('summary_message_id')
             
             conversation = get_object_or_404(Conversation, id=conversation_id)
             user_instance = request.user
@@ -67,12 +68,13 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
 
             if not input_message:
                 return Response({'error': 'No message provided'}, status=status.HTTP_400_BAD_REQUEST)
-            bot_response = chatbot(input_message, character_id)
+            summary_message = get_object_or_404(SummaryMessage, id=summary_message_id)
+            bot_response = chatbot(input_message, character_id, summary_message)
 
 
             # TTS 파라미터 설정
             tts_params = {
-                'speaker': data.get('speaker', 'nara'),
+                'speaker': data.get('speaker', 'nara'), 
                 'volume': int(data.get('volume', 0)),
                 'speed': int(data.get('speed', 0)),
                 'pitch': int(data.get('pitch', 0)),

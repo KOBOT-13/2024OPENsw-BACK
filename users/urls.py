@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import *
 
+
 router = DefaultRouter()
 
 urlpatterns = [
@@ -12,7 +13,8 @@ urlpatterns = [
 
     # dj-rest-auth
     path('auth/registration/', RegisterView.as_view(), name='custom-registration'),
-    path('auth/login/', CustomLoginView.as_view(), name='rest_login'),
+    path('auth/login/', CustomLoginView.as_view(), name='custom_login'),
+    path('auth/logout/', CustomLogoutView.as_view(), name='custom-logout'),
     path('auth/', include('dj_rest_auth.urls')),
     # path('auth/registration/', include('dj_rest_auth.registration.urls')),
     path("auth/registration/account-confirm-email/<str:key>", CustomConfirmEmailView.as_view(),

@@ -6,6 +6,9 @@ router = DefaultRouter()
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('check-username/', CheckUsernameView.as_view(), name='check-username'),
+    path('check-email/', CheckEmailView.as_view(), name='check-email'),
+    
 
     # allauth
     path('accounts/', include('allauth.urls')),

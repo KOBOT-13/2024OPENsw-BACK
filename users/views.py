@@ -13,6 +13,9 @@ from users.adapter import CustomAccountAdapter
 from rest_framework import generics
 from .serializers import CustomUserSerializer 
 from allauth.account.utils import send_email_confirmation
+from django.contrib.auth import authenticate, login, get_user_model
+
+User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = CustomUserSerializer
@@ -97,6 +100,19 @@ class CustomLoginView(LoginView):
             return super().post(request, *args, **kwargs)
         else:
             # 로그인 실패 시 처리
+            if not EmailAddress.objects.filter(email=email).exists():
+                return Response(
+                    {"detail": "등록된 이메일 주소가 아닙니다."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user = User.objects.filter(email=email).first()
+            if user and not user.check_password(password):
+                return Response(
+                    {"detail": "비밀번호가 잘못되었습니다."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
             return Response(
                 {"detail": "이메일 주소 또는 비밀번호가 잘못되었습니다."},
                 status=status.HTTP_400_BAD_REQUEST

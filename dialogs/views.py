@@ -6,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 import os
 import json
 import requests
-from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework.views import APIView
@@ -15,6 +14,7 @@ from rest_framework import status
 from .serializers import *
 from .chat_utils  import *
 from books.models import Character
+from rest_framework.decorators import action
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
@@ -24,6 +24,32 @@ class ConversationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def start_conversation(self, request):
+        user = request.user
+        book_id = request.data.get('book')
+        character_id = request.data.get('character')
+        
+        print(f"Received request to start conversation: user={user}, book_id={book_id}, character_id={character_id}")
+        
+        # Check if the conversation already exists
+        existing_conversation = Conversation.objects.filter(user=user, book_id=book_id, character_id=character_id).first()
+        
+        if existing_conversation:
+            print(f"Found existing conversation: {existing_conversation.id}")
+            serializer = self.get_serializer(existing_conversation)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        # Create a new conversation if it does not exist
+        print("No existing conversation found, creating a new one.")
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            print(f"Created new conversation: {serializer.instance.id}")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        print(f"Serializer errors: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()

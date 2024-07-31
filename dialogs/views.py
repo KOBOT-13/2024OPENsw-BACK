@@ -15,6 +15,7 @@ from rest_framework import status
 from .serializers import *
 from .chat_utils  import *
 from books.models import Character
+from .models import *
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
@@ -138,3 +139,25 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             return Response({'error': 'Invalid JSON'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class CloseMessage(APIView):
+    def post(self, request):
+        data = json.loads(request.body)
+        message = data.get('message')
+        conversation_id = data.get('conversation_id')
+        character_id = data.get('character_id')
+        
+        conversation = get_object_or_404(Conversation, id=conversation_id)
+        user_instance = request.user
+        character_instance = get_object_or_404(Character, id=character_id)
+        
+        summary_message = endChat(character_id)
+        
+        summary_request = SummaryMessage.objects.create(
+            conversation = conversation,
+            user_sender = user_instance,
+            character_sender = character_instance,
+            message = summary_message
+        )
+        
+        summary_request.save()

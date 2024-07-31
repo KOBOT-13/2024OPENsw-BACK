@@ -35,6 +35,19 @@ class RegisterView(generics.CreateAPIView):
         # 이메일 인증 메일 전송
         send_email_confirmation(request, user)
 
+class CheckUsernameView(APIView):
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        if User.objects.filter(username=username).exists():
+            return Response({"detail": "이미 존재하는 닉네임입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "사용 가능한 닉네임입니다."}, status=status.HTTP_200_OK)
+
+class CheckEmailView(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if User.objects.filter(email=email).exists():
+            return Response({"detail": "이미 존재하는 이메일 주소입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "사용 가능한 이메일 주소입니다."}, status=status.HTTP_200_OK)
 
 class CustomConfirmEmailView(ConfirmEmailView):
     template_name = 'account/email/success_verify_email.html'

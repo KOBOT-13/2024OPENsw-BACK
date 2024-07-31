@@ -45,7 +45,7 @@ CHARACTER_MAP = {
 }
 
 # 챗봇 함수 정의
-def chatbot(input_message, char_id):
+def chatbot(input_message, char_id, summary_message): # summary_message를 받아서 예전 대화를 기록하게 해주세요.
     characters = CHARACTER_MAP[char_id]
     
     try:
@@ -87,3 +87,8 @@ def chatbot(input_message, char_id):
 
     except Exception as e:
         return f"Error: {str(e)}"
+    
+    
+def endChat(char_id):
+    
+    return # summary message가 리턴되게 해주세요.

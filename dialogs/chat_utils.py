@@ -15,7 +15,9 @@ chat_model = ChatOpenAI(openai_api_key=api_key)
 
 # 대화 요약 메모리 초기화
 memory = ConversationSummaryBufferMemory(
-    llm=ChatOpenAI(temperature=0), return_messages=True)
+    llm=ChatOpenAI(temperature=0), 
+    max_token_limit = 200,
+    return_messages=True)
 
 # OpenAI 클라이언트 초기화
 client = OpenAI()
@@ -47,7 +49,6 @@ CHARACTER_MAP = {
 # 챗봇 함수 정의
 def chatbot(input_message, char_id):
     characters = CHARACTER_MAP[char_id]
-    
     try:
         model = "gpt-3.5-turbo"
         convo_history.append({"role": "user", "content": input_message})

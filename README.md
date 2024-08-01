@@ -37,7 +37,7 @@ https://www.postgresql.org/download/ # 원하는 버전을 설치합니다.
 ### postgreSQL과 장고 연동하기
 ```bash
 CREATE DATABASE 데이터베이스 이름;
-CREATE USER 유저명 WITH PASSWORD 비밀번호;
+CREATE USER 유저명 WITH PASSWORD '비밀번호';
 ALTER ROLE 유저명 SET client_encoding TO 'utf8';
 ALTER ROLE 유저명 SET default_transaction_isolation TO 'read committed';
 ALTER ROLE 유저명 SET TIME ZONE 'Asia/Seoul';

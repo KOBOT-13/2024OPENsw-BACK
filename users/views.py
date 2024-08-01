@@ -84,7 +84,7 @@ class CustomConfirmEmailView(ConfirmEmailView):
         
         return super().dispatch(request, *args, **kwargs)
 
-class CustomLoginView(LoginView):
+'''class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
         print('custom login view call')
 
@@ -131,7 +131,7 @@ class CustomLoginView(LoginView):
             return Response(
                 {"detail": "이메일 주소 또는 비밀번호가 잘못되었습니다."},
                 status=status.HTTP_400_BAD_REQUEST
-            )
+            )'''
 
 class CustomLogoutView(APIView):
     permission_classes = [IsAuthenticated]

@@ -2,9 +2,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser
 
-class BookInline(admin.TabularInline):
-    model = CustomUser.mybook_list.through
-    extra = 1
+# class BookInline(admin.TabularInline):
+#     model = CustomUser.mybook_list.through
+#     extra = 1
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = ('email', 'username', 'birth_date', 'is_staff', 'is_active', 'is_verified')
@@ -21,6 +21,6 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ('email', 'username')
     ordering = ('email',)
-    inlines = (BookInline,)
+    # inlines = (BookInline,)
 
 admin.site.register(CustomUser, CustomUserAdmin)

@@ -16,7 +16,7 @@ urlpatterns = [
 
     # dj-rest-auth
     path('auth/registration/', RegisterView.as_view(), name='custom-registration'),
-    path('auth/login/', CustomLoginView.as_view(), name='custom_login'),
+    # path('auth/login/', CustomLoginView.as_view(), name='custom_login'),
     path('auth/logout/', CustomLogoutView.as_view(), name='custom-logout'),
     path('auth/', include('dj_rest_auth.urls')),
     # path('auth/registration/', include('dj_rest_auth.registration.urls')),

@@ -46,7 +46,6 @@ class Post(models.Model): # '독후감'
     book = models.ForeignKey(Book, related_name='post', on_delete=models.CASCADE)  # 책 ID (참조: books 테이블)
     post_date = models.DateTimeField(auto_now_add=True) # 게시글 발행일자
     update_date = models.DateTimeField(auto_now=True) # 게시글 수정일자
-    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='post_like', blank=True) # 좋아요 한 유저 ( id 로 보임 )
     body = models.TextField(max_length=3000)  # 게시글 내용 (3000자 이내)
 
     def __str__(self):

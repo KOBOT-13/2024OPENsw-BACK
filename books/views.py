@@ -49,23 +49,8 @@ class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
-    @action(detail=True, methods=['post'])
-    def like(self, request, pk=None): # 독후감에 대한 좋아요
-        post = self.get_object()
-        user = request.user
-        if user in post.likes.all():
-            post.likes.remove(user)
-            return Response({'status': 'post unliked'})
-        else:
-            post.likes.add(user)
-            return Response({'status': 'post liked'})
-
-    @action(detail=True, methods=['get'])
-    def liked_users(self, request, pk=None): # 독후감에 대해 좋아요 한 사람들 조회.
-        post = self.get_object()
-        liked_users = post.likes.all()
-        liked_users_data = [{'id': user.id, 'username': user.username} for user in liked_users]
-        return Response({'liked_users': liked_users_data})
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class AllPostByBookView(ListAPIView): # 특정 책에 대한 모든 독후감

@@ -16,8 +16,6 @@ urlpatterns = [
     path('', include(router.urls)),
     path('books/<int:book_id>/posts/', AllPostByBookView.as_view(), name='book_posts'),
     path('my_posts/', AllPostByUserView.as_view(), name='user-posts'),
-    path('posts/<int:pk>/like/', PostViewSet.as_view({'post': 'like'}), name='like'),
-    path('posts/<int:pk>/liked_users/', PostViewSet.as_view({'get': 'liked_users'}), name='liked-users'),
     path('books/<int:book_id>/comments/', AllCommentsByBookView.as_view(), name='book-comments'),
     path('my_comments/', AllCommentsByUserView.as_view(), name='usercomments'),
     path('comments/<int:pk>/like/', CommentViewSet.as_view({'post': 'like'}), name='comment-like'),

@@ -43,22 +43,26 @@ CHARACTER_MAP = {
     16: "헨젤과 그레텔의 마녀",
     
 }
-
+summary_id = 0 
 # 챗봇 함수 정의
 def chatbot(input_message, char_id, summary_message): # summary_message를 받아서 예전 대화를 기록하게 해주세요.
     characters = CHARACTER_MAP[char_id]
-    
+    if summary_id ==0 : 
+        memory.save_context (
+            inputs= summary_message
+        )
+        summary_id =1 
+    else :
+        summary_message = memory.load_memory_variables({}).get("history", "")
     try:
         model = "gpt-3.5-turbo"
-        convo_history.append({"role": "user", "content": input_message})
-
+        
         # 이전 대화 요약 가져오기
-        summary = memory.load_memory_variables({}).get("history", "")
-
+        # summary = memory.load_memory_variables({}).get("history", "")
         # 메시지 구성
         messages = [
             {"role": "system", "content": "답변은 한국어로하고 너는 " + characters + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"},
-            {"role": "system", "content": f"이전 대화 요약: {summary}"},
+            {"role": "system", "content": f"이전 대화 요약: {summary_message}"},
             {"role": "user", "content": input_message},
         ]
 
@@ -81,14 +85,12 @@ def chatbot(input_message, char_id, summary_message): # summary_message를 받�
         memory.save_context(
             inputs={"user": input_message},
             outputs={"assistant": bot_response}
+            
         )
 
-        return bot_response
+        return bot_response, summary_message
 
     except Exception as e:
         return f"Error: {str(e)}"
     
     
-def endChat(char_id):
-    
-    return # summary message가 리턴되게 해주세요.

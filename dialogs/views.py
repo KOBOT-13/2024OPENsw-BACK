@@ -39,16 +39,6 @@ class ConversationViewSet(viewsets.ModelViewSet):
         # Check if the conversation already exists
         existing_conversation = Conversation.objects.filter(user=user, book_id=book_id, character_id=character_id).first()
         
-        character_instance = get_object_or_404(Character, id=character_id)
-        
-        default_summary_message = SummaryMessage.objects.create(
-            user_sender = user,
-            character_sender = character_instance,
-            end_key = 0
-        )
-        
-        default_summary_message.save()
-        
         if existing_conversation:
             print(f"Found existing conversation: {existing_conversation.id}")
             serializer = self.get_serializer(existing_conversation)
@@ -60,6 +50,15 @@ class ConversationViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             self.perform_create(serializer)
             print(f"Created new conversation: {serializer.instance.id}")
+            character_instance = get_object_or_404(Character, id=character_id)
+        
+            default_summary_message = SummaryMessage.objects.create(
+                user_sender = user,
+                character_sender = character_instance,
+                end_key = 1
+            )
+            
+            default_summary_message.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         print(f"Serializer errors: {serializer.errors}")
@@ -104,14 +103,17 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             )
             
             user_request.save()
-
+            
             if not input_message:
                 return Response({'error': 'No message provided'}, status=status.HTTP_400_BAD_REQUEST)
             
             summary_message = get_object_or_404(SummaryMessage, id=summary_message_id)
             end_key = summary_message.end_key
-            bot_response = chatbot(input_message, character_id, summary_message, end_key)
-
+            bot_response, chat_summary_message = chatbot(input_message, character_id, summary_message, end_key)
+            summary_message.message = chat_summary_message
+            summary_message.save()
+            
+            print(summary_message)
 
             # TTS 파라미터 설정
             tts_params = {
@@ -126,7 +128,7 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
                 'end_pitch': int(data.get('end_pitch', 0)),
                 'text': bot_response
             }
-
+            
             # TTSRequest 생성
             tts_request = Message.objects.create(              
                 conversation = conversation,

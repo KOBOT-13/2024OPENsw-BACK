@@ -37,7 +37,7 @@ class SummaryMessage(models.Model):
     id = models.AutoField(primary_key=True)
     user_sender = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     character_sender = models.ForeignKey(Character, null=True, blank=True, on_delete=models.CASCADE)
-    message = models.TextField(null=True)
+    message = models.TextField(default=0)
     end_key = models.IntegerField(default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
     

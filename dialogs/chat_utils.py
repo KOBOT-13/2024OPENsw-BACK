@@ -15,7 +15,9 @@ chat_model = ChatOpenAI(openai_api_key=api_key)
 
 # 대화 요약 메모리 초기화
 memory = ConversationSummaryBufferMemory(
-    llm=ChatOpenAI(temperature=0), return_messages=True)
+    llm=ChatOpenAI(temperature=0), 
+    max_token_limit= 100,
+    return_messages=True)
 
 # OpenAI 클라이언트 초기화
 client = OpenAI()
@@ -43,17 +45,22 @@ CHARACTER_MAP = {
     16: "헨젤과 그레텔의 마녀",
     
 }
-summary_id = 0 
+
 # 챗봇 함수 정의
-def chatbot(input_message, char_id, summary_message): # summary_message를 받아서 예전 대화를 기록하게 해주세요.
+def chatbot(input_message, char_id, summary_message, end_key): # summary_message를 받아서 예전 대화를 기록하게 해주세요.
     characters = CHARACTER_MAP[char_id]
-    if summary_id ==0 : 
-        memory.save_context (
-            inputs= summary_message
-        )
-        summary_id =1 
+    if summary_message == 0 :
+        messages = [
+            {"role": "system", "content": "답변은 한국어로하고 너는 " + characters + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"},
+            {"role": "user", "content": input_message},
+        ]
     else :
-        summary_message = memory.load_memory_variables({}).get("history", "")
+        summary_message = memory.load_mememory_variables({}).get("history", "")
+        messages = [
+            {"role": "system", "content": "답변은 한국어로하고 너는 " + characters + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"},
+            {"role": "system", "content": f"이전 대화 요약: {summary_message}"},
+            {"role": "user", "content": input_message},
+        ]
     try:
         model = "gpt-3.5-turbo"
         
@@ -79,18 +86,20 @@ def chatbot(input_message, char_id, summary_message): # summary_message를 받�
         else:
             bot_response = "No response from the model"
 
-        convo_history.append({"role": "assistant", "content": bot_response})
 
         # 메모리에 대화 내용 저장
         memory.save_context(
             inputs={"user": input_message},
             outputs={"assistant": bot_response}
-            
         )
-
-        return bot_response, summary_message
-
+        summary_message = memory.load_mememory_variables({}).get("history", "")
     except Exception as e:
         return f"Error: {str(e)}"
+    if end_key:
+        memory = ConversationSummaryBufferMemory(
+    llm=ChatOpenAI(temperature=0), return_messages=True, max_token_limit=100)
+        return bot_response, summary_message
+    return bot_response
+    
     
     

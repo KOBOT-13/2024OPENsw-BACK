@@ -150,11 +150,14 @@ class ProfileView(APIView):
 
     def get(self, request):
         user = request.user
+        profile_image = user.profile_image.url if user.profile_image else None
         return Response({
-            'id' : user.id,
+            'id': user.id,
             'email': user.email,
             'username': user.username,
-            'is_staff': user.is_staff
+            'is_staff': user.is_staff,
+            'birth_date': user.birth_date,
+            'profile_image': profile_image,
         })
 
 #카카오톡 로그인 뷰

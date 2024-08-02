@@ -19,3 +19,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password1'])
         user.save()
         return user
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'username', 'birth_date', 'profile_image']
+        extra_kwargs = {
+            'email': {'read_only': True},
+            'username': {'required': False},
+            'birth_date': {'required': False},
+            'profile_image': {'required': False},
+        }

@@ -35,10 +35,10 @@ class Message(models.Model):
     
 class SummaryMessage(models.Model):
     id = models.AutoField(primary_key=True)
-    conversation = models.ForeignKey(Conversation, related_name='summary_messages', on_delete=models.CASCADE)
     user_sender = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
     character_sender = models.ForeignKey(Character, null=True, blank=True, on_delete=models.CASCADE)
-    message = models.TextField()
+    message = models.TextField(null=True)
+    end_key = models.IntegerField(default=0)
     timestamp = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):

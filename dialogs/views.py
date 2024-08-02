@@ -16,6 +16,7 @@ from .serializers import *
 from .chat_utils  import *
 from books.models import Character
 from .models import *
+from rest_framework.decorators import action
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
@@ -24,7 +25,45 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
+        
+        
+        
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def start_conversation(self, request):
+        user = request.user
+        book_id = request.data.get('book')
+        character_id = request.data.get('character')
+        
+        print(f"Received request to start conversation: user={user}, book_id={book_id}, character_id={character_id}")
+        
+        # Check if the conversation already exists
+        existing_conversation = Conversation.objects.filter(user=user, book_id=book_id, character_id=character_id).first()
+        
+        character_instance = get_object_or_404(Character, id=character_id)
+        
+        default_summary_message = SummaryMessage.objects.create(
+            user_sender = user,
+            character_sender = character_instance,
+            end_key = 0
+        )
+        
+        default_summary_message.save()
+        
+        if existing_conversation:
+            print(f"Found existing conversation: {existing_conversation.id}")
+            serializer = self.get_serializer(existing_conversation)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        # Create a new conversation if it does not exist
+        print("No existing conversation found, creating a new one.")
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            print(f"Created new conversation: {serializer.instance.id}")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        print(f"Serializer errors: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
@@ -68,8 +107,10 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
 
             if not input_message:
                 return Response({'error': 'No message provided'}, status=status.HTTP_400_BAD_REQUEST)
+            
             summary_message = get_object_or_404(SummaryMessage, id=summary_message_id)
-            bot_response = chatbot(input_message, character_id, summary_message)
+            end_key = summary_message.end_key
+            bot_response = chatbot(input_message, character_id, summary_message, end_key)
 
 
             # TTS 파라미터 설정
@@ -142,24 +183,24 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class CloseMessage(APIView):
-    def post(self, request):
-        data = json.loads(request.body)
-        message = data.get('message')
-        conversation_id = data.get('conversation_id')
-        character_id = data.get('character_id')
+# class CloseMessage(APIView):
+#     def post(self, request):
+#         data = json.loads(request.body)
+#         message = data.get('message')
+#         conversation_id = data.get('conversation_id')
+#         character_id = data.get('character_id')
         
-        conversation = get_object_or_404(Conversation, id=conversation_id)
-        user_instance = request.user
-        character_instance = get_object_or_404(Character, id=character_id)
+        # conversation = get_object_or_404(Conversation, id=conversation_id)
+        # user_instance = request.user
+        # character_instance = get_object_or_404(Character, id=character_id)
         
-        summary_message = endChat(character_id)
+#         summary_message = endChat(character_id)
         
-        summary_request = SummaryMessage.objects.create(
-            conversation = conversation,
-            user_sender = user_instance,
-            character_sender = character_instance,
-            message = summary_message
-        )
+#         summary_request = SummaryMessage.objects.create(
+#             conversation = conversation,
+#             user_sender = user_instance,
+#             character_sender = character_instance,
+#             message = summary_message
+#         )
         
-        summary_request.save()
+#         summary_request.save()

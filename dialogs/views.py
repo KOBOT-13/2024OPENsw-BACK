@@ -15,6 +15,7 @@ from .serializers import *
 from .chat_utils  import *
 from books.models import Character
 from rest_framework.decorators import action
+from django.utils import timezone
 
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
@@ -79,6 +80,9 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             conversation = get_object_or_404(Conversation, id=conversation_id)
             user_instance = request.user
             character_instance = get_object_or_404(Character, id=character_id)
+            
+            conversation.updated_at = timezone.now()
+            conversation.save()
             
             user_request = Message.objects.create(
                 conversation = conversation,

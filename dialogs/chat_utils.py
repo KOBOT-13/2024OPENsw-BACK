@@ -22,9 +22,6 @@ memory = ConversationSummaryBufferMemory(
 # OpenAI 클라이언트 초기화
 client = OpenAI()
 
-# 대화 기록
-convo_history = []
-
 # 캐릭터 맵
 CHARACTER_MAP = {
     1: "아기 돼지 삼형제의 첫째 돼지",
@@ -49,14 +46,13 @@ CHARACTER_MAP = {
 # 챗봇 함수 정의
 def chatbot(input_message, char_id, summary_message, end_key): # summary_message를 받아서 예전 대화를 기록하게 해주세요.
     characters = CHARACTER_MAP[char_id]
-    global memory
     if summary_message == 0 :
         messages = [
             {"role": "system", "content": "답변은 한국어로하고 너는 " + characters + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"},
             {"role": "user", "content": input_message},
         ]
     else :
-        summary_message = memory.load_mememory_variables({}).get("history", "")
+        summary_message = memory.load_memory_variables({}).get("history", "")
         messages = [
             {"role": "system", "content": "답변은 한국어로하고 너는 " + characters + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"},
             {"role": "system", "content": f"이전 대화 요약: {summary_message}"},
@@ -93,7 +89,7 @@ def chatbot(input_message, char_id, summary_message, end_key): # summary_message
             inputs={"user": input_message},
             outputs={"assistant": bot_response}
         )
-        summary_message = memory.load_mememory_variables({}).get("history", "")
+        summary_message = memory.load_memory_variables({}).get("history", "")
     except Exception as e:
         return f"Error: {str(e)}"
     if end_key:

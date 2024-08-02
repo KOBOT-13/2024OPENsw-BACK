@@ -46,6 +46,7 @@ CHARACTER_MAP = {
 # 챗봇 함수 정의
 def chatbot(input_message, char_id, summary_message, end_key): # summary_message를 받아서 예전 대화를 기록하게 해주세요.
     characters = CHARACTER_MAP[char_id]
+    global memory
     if summary_message == 0 :
         messages = [
             {"role": "system", "content": "답변은 한국어로하고 너는 " + characters + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"},

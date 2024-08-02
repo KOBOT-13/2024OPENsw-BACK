@@ -1,19 +1,22 @@
 from django.contrib.sites import requests
 from django.http import JsonResponse
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from allauth.account.views import ConfirmEmailView
 from allauth.account.models import EmailConfirmationHMAC
 from allauth.account.models import EmailAddress
-from rest_framework import status
+from rest_framework import status, mixins
 from dj_rest_auth.views import LoginView
 from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.adapter import CustomAccountAdapter
 from rest_framework import generics
-from .serializers import CustomUserSerializer 
+
+from .models import CustomUser
+from .serializers import CustomUserSerializer, ProfileUpdateSerializer
 from allauth.account.utils import send_email_confirmation
 from django.contrib.auth import authenticate, login, get_user_model
 
@@ -156,6 +159,21 @@ class ProfileView(APIView):
             'username': user.username,
             'is_staff': user.is_staff
         })
+
+class ProfileUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
+    queryset = CustomUser.objects.all()
+    serializer_class = ProfileUpdateSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get_object(self):
+        return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
 #카카오톡 로그인 뷰
 """from django.shortcuts import render

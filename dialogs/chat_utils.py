@@ -3,7 +3,6 @@ from openai import OpenAI
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain_openai import ChatOpenAI
 from django.conf import settings
-
 # 환경 변수 로드
 api_key = settings.OPENAI_API_KEY
 
@@ -46,6 +45,7 @@ CHARACTER_MAP = {
 # 챗봇 함수 정의
 def chatbot(input_message, char_id, summary_message, end_key): # summary_message를 받아서 예전 대화를 기록하게 해주세요.
     characters = CHARACTER_MAP[char_id]
+    print (summary_message)
     global memory
     if summary_message == 0 :
         messages = [
@@ -53,7 +53,17 @@ def chatbot(input_message, char_id, summary_message, end_key): # summary_message
             {"role": "user", "content": input_message},
         ]
     else :
-        memory.memory_variables = {"history" : summary_message}
+        if isinstance(summary_message, list):
+    # 리스트에서 문자열로 변환
+            summary_message = "\n".join(summary_message)
+        else:
+    # summary_message_list가 리스트가 아닌 경우
+            summary_message = str(summary_message)
+
+        memory.save_context(
+        inputs={"system": "이전 대화 내용이 뭐야?"},
+        outputs={"summary": summary_message}
+    )
         messages = [
             {"role": "system", "content": "답변은 한국어로하고 너는 " + characters + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"},
             {"role": "system", "content": f"이전 대화 요약: {summary_message}"},

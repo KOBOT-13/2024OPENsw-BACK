@@ -1,20 +1,26 @@
 from django.contrib.sites import requests
 from django.http import JsonResponse
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from allauth.account.views import ConfirmEmailView
 from allauth.account.models import EmailConfirmationHMAC
 from allauth.account.models import EmailAddress
-from rest_framework import status
+from rest_framework import status, mixins
 from dj_rest_auth.views import LoginView
 from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.adapter import CustomAccountAdapter
 from rest_framework import generics
-from .serializers import CustomUserSerializer 
+
+from .models import CustomUser
+from .serializers import CustomUserSerializer, ProfileUpdateSerializer
 from allauth.account.utils import send_email_confirmation
+from django.contrib.auth import authenticate, login, get_user_model
+
+User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = CustomUserSerializer
@@ -34,6 +40,19 @@ class RegisterView(generics.CreateAPIView):
         # 이메일 인증 메일 전송
         send_email_confirmation(request, user)
 
+class CheckUsernameView(APIView):
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        if User.objects.filter(username=username).exists():
+            return Response({"detail": "이미 존재하는 닉네임입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "사용 가능한 닉네임입니다."}, status=status.HTTP_200_OK)
+
+class CheckEmailView(APIView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if User.objects.filter(email=email).exists():
+            return Response({"detail": "이미 존재하는 이메일 주소입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "사용 가능한 이메일 주소입니다."}, status=status.HTTP_200_OK)
 
 class CustomConfirmEmailView(ConfirmEmailView):
     template_name = 'account/email/success_verify_email.html'
@@ -68,7 +87,7 @@ class CustomConfirmEmailView(ConfirmEmailView):
         
         return super().dispatch(request, *args, **kwargs)
 
-class CustomLoginView(LoginView):
+'''class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
         print('custom login view call')
 
@@ -99,10 +118,23 @@ class CustomLoginView(LoginView):
             return super().post(request, *args, **kwargs)
         else:
             # 로그인 실패 시 처리
+            if not EmailAddress.objects.filter(email=email).exists():
+                return Response(
+                    {"detail": "등록된 이메일 주소가 아닙니다."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            user = User.objects.filter(email=email).first()
+            if user and not user.check_password(password):
+                return Response(
+                    {"detail": "비밀번호가 잘못되었습니다."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
             return Response(
                 {"detail": "이메일 주소 또는 비밀번호가 잘못되었습니다."},
                 status=status.HTTP_400_BAD_REQUEST
-            )
+            )'''
 
 class CustomLogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -121,51 +153,30 @@ class ProfileView(APIView):
 
     def get(self, request):
         user = request.user
+        profile_image = user.profile_image.url if user.profile_image else None
         return Response({
-            'id' : user.id,
+            'id': user.id,
             'email': user.email,
             'username': user.username,
-            'is_staff': user.is_staff
+            'is_staff': user.is_staff,
+            'birth_date': user.birth_date,
+            'profile_image': profile_image,
         })
 
-# class CustomLoginView(LoginView):
-#     def post(self, request, *args, **kwargs):
-#         print('custom login view call')
-#         # 요청에서 email과 password 가져오기
-#         email = request.data.get('email')  # 이메일 필드
-#         password = request.data.get('password')  # 비밀번호 필드
-#         print(email)
-#         print(password)
-#         # 기본 로그인 기능 수행
-#         response = super().post(request, *args, **kwargs)
-#         print('debug1')
-#         # 로그인 실패 시 처리
-#         if response.status_code == status.HTTP_400_BAD_REQUEST:
-#             print('debug2')
-#             # 응답에서 non_field_errors를 확인
-#             if 'non_field_errors' in response.data:
-#                 for error in response.data['non_field_errors']:
-#                     if "이메일 주소가 확인되지 않았습니다." in error:
-#                         try:
-#                             # 이메일 주소로 사용자 가져오기
-#                             email_address = EmailAddress.objects.get(email=email, primary=True)
-                            
-#                             # 이메일 주소가 인증되지 않은 경우
-#                             if email_address and not email_address.verified:
-#                                 user = email_address.user
-#                                 send_email_confirmation(request, user)  # 인증 이메일 재전송
-#                                 return Response(
-#                                     {"detail": "이메일 인증이 필요합니다. 인증 이메일이 재전송되었습니다."},
-#                                     status=status.HTTP_401_UNAUTHORIZED
-#                                 )
-#                         except EmailAddress.DoesNotExist:
-#                             return Response(
-#                                 {"detail": "이메일 주소가 존재하지 않습니다."},
-#                                 status=status.HTTP_400_BAD_REQUEST
-#                             )
+class ProfileUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
+    queryset = CustomUser.objects.all()
+    serializer_class = ProfileUpdateSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
-#         return response  # 로그인 성공 또는 다른 에러에 대한 응답 반환
-    
+    def get_object(self):
+        return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
 #카카오톡 로그인 뷰
 """from django.shortcuts import render

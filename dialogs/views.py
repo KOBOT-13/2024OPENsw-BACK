@@ -6,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 import os
 import json
 import requests
-from django.http import JsonResponse
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework.views import APIView
@@ -25,8 +24,6 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-        
-        
         
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def start_conversation(self, request):

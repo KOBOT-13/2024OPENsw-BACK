@@ -14,7 +14,7 @@ chat_model = ChatOpenAI(openai_api_key=api_key)
 
 # 대화 요약 메모리 초기화
 memory = ConversationSummaryBufferMemory(
-    llm=ChatOpenAI(temperature=0), 
+    llm=ChatOpenAI(temperature=0),
     max_token_limit= 1000,
     return_messages=True)
 
@@ -109,6 +109,3 @@ def chatbot(input_message, char_id, summary_message, end_key): # summary_message
     llm=ChatOpenAI(temperature=0), return_messages=True, max_token_limit=1000)
         return bot_response, summary_message
     return bot_response
-    
-    
-    

@@ -9,7 +9,7 @@ class Quiz(models.Model):
     answer = models.CharField(max_length=200)  # 정답 (텍스트)
 
     def __str__(self):
-        return self.quiz_text
+        return self.question
 
 
 

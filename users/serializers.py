@@ -10,19 +10,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['username', 'email', 'password1', 'password2', 'birth_date']
 
-
-    def validate(self, data):
-        if data['password1'] != data['password2']:
-            raise serializers.ValidationError("Passwords do not match.")
-        
-        validate_password(data['password1'])
-        
-        return data
-
     def create(self, validated_data):
-        if validated_data['password1'] != validated_data['password2']:
-            raise serializers.ValidationError({"password": "Passwords do not match."})
-
         user = CustomUser(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -31,3 +19,14 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password1'])
         user.save()
         return user
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'username', 'birth_date', 'profile_image']
+        extra_kwargs = {
+            'email': {'read_only': True},
+            'username': {'required': False},
+            'birth_date': {'required': False},
+            'profile_image': {'required': False},
+        }

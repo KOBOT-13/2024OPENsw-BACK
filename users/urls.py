@@ -7,13 +7,16 @@ router = DefaultRouter()
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('check-username/', CheckUsernameView.as_view(), name='check-username'),
+    path('check-email/', CheckEmailView.as_view(), name='check-email'),
+    
 
     # allauth
     path('accounts/', include('allauth.urls')),
 
     # dj-rest-auth
     path('auth/registration/', RegisterView.as_view(), name='custom-registration'),
-    path('auth/login/', CustomLoginView.as_view(), name='custom_login'),
+    # path('auth/login/', CustomLoginView.as_view(), name='custom_login'),
     path('auth/logout/', CustomLogoutView.as_view(), name='custom-logout'),
     path('auth/', include('dj_rest_auth.urls')),
     # path('auth/registration/', include('dj_rest_auth.registration.urls')),
@@ -23,4 +26,5 @@ urlpatterns = [
     # path('kakao-user-info/', kakao_user_info, name='kakao-user-info'),
 
     path('profile/', ProfileView.as_view(), name='profile'),  # 프로필 URL 추가
+    path('profile/update/', ProfileUpdateView.as_view(), name='profile-update'),
 ]

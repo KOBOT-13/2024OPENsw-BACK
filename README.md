@@ -36,15 +36,15 @@ https://www.postgresql.org/download/ # 원하는 버전을 설치합니다.
 
 ### postgreSQL과 장고 연동하기
 ```bash
-CREATE DATABASE ('데이터베이스 이름');
-CREATE USER ('유저명') WITH PASSWORD ('비밀번호');
-ALTER ROLE ('유저명') SET client_encoding TO 'utf8';
-ALTER ROLE ('유저명') SET default_transaction_isolation TO 'read committed';
-ALTER ROLE ('유저명') SET TIME ZONE 'Asia/Seoul';
-GRANT ALL PRIVILEGES ON DATABASE ('데이터베이스 이름') TO ('유저명');
-ALTER USER ('유저명') SUPERUSER;
+CREATE DATABASE 데이터베이스 이름;
+CREATE USER 유저명 WITH PASSWORD '비밀번호';
+ALTER ROLE 유저명 SET client_encoding TO 'utf8';
+ALTER ROLE 유저명 SET default_transaction_isolation TO 'read committed';
+ALTER ROLE 유저명 SET TIME ZONE 'Asia/Seoul';
+GRANT ALL PRIVILEGES ON DATABASE 데이터베이스 이름 TO 유저명;
+ALTER USER 유저명 SUPERUSER;
 ```
-secret.json 파일에 설정되어 있는 '데이터베이스 이름', '유저명', '비밀번호'를 보고  
+secret.json 파일에 설정되어 있는 데이터베이스 이름, 유저명, 비밀번호를 보고  
 위 명령어를 차례로 SQL Shell 에서 실행합니다.
 
 ### postgreSQL이 작동을 멈추었을 경우(Windows)
@@ -83,7 +83,7 @@ python manage.py runserver
 
 ### API 관리 페이지 접속(수정해야함)
 ```bash
-http://127.0.0.1:8000/??????
+http://127.0.0.1:8000/api/(앱 이름)
 ```
 해당 URL로 접속하여 api를 확인하고 사용할 수 있습니다.
 

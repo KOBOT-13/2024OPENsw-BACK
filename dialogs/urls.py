@@ -12,4 +12,5 @@ urlpatterns = [
     # ex) path('pages/<int:year>/', AllPagesView.as_view(), name='all-pages-list'),
 
     path('mtt/', MessagetoTTS.as_view(), name='user_message'),
+    # path('endchat/', SummaryMessage.as_view(), name="end_chat"),
 ]

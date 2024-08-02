@@ -32,3 +32,14 @@ class Message(models.Model):
     def __str__(self):
         sender = self.user_sender if self.sender_type == 'user' else self.character_sender
         return f"Message from {sender} at {self.timestamp}"
+    
+class SummaryMessage(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_sender = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)
+    character_sender = models.ForeignKey(Character, null=True, blank=True, on_delete=models.CASCADE)
+    message = models.TextField(default=0)
+    end_key = models.IntegerField(default=0)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"SummaryMessage {self.user_sender} and {self.character_sender}"

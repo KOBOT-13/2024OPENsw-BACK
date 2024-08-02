@@ -14,6 +14,7 @@ from rest_framework import status
 from .serializers import *
 from .chat_utils  import *
 from books.models import Character
+from .models import *
 from rest_framework.decorators import action
 
 class ConversationViewSet(viewsets.ModelViewSet):
@@ -23,7 +24,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
+        
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def start_conversation(self, request):
         user = request.user
@@ -46,6 +47,15 @@ class ConversationViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             self.perform_create(serializer)
             print(f"Created new conversation: {serializer.instance.id}")
+            character_instance = get_object_or_404(Character, id=character_id)
+        
+            default_summary_message = SummaryMessage.objects.create(
+                user_sender = user,
+                character_sender = character_instance,
+                end_key = 1
+            )
+            
+            default_summary_message.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         print(f"Serializer errors: {serializer.errors}")
@@ -75,6 +85,7 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             input_message = data.get('message')
             conversation_id = data.get('conversation_id')
             character_id = data.get('character_id')
+            summary_message_id = data.get('summary_message_id')
             
             conversation = get_object_or_404(Conversation, id=conversation_id)
             user_instance = request.user
@@ -89,15 +100,21 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             )
             
             user_request.save()
-
+            
             if not input_message:
                 return Response({'error': 'No message provided'}, status=status.HTTP_400_BAD_REQUEST)
-            bot_response = chatbot(input_message, character_id)
-
+            
+            summary_message = get_object_or_404(SummaryMessage, id=summary_message_id)
+            end_key = summary_message.end_key
+            bot_response, chat_summary_message = chatbot(input_message, character_id, summary_message.message, end_key)
+            summary_message.message = chat_summary_message
+            summary_message.save()
+            
+            print(summary_message)
 
             # TTS 파라미터 설정
             tts_params = {
-                'speaker': data.get('speaker', 'nara'),
+                'speaker': data.get('speaker', 'nara'), 
                 'volume': int(data.get('volume', 0)),
                 'speed': int(data.get('speed', 0)),
                 'pitch': int(data.get('pitch', 0)),
@@ -108,7 +125,7 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
                 'end_pitch': int(data.get('end_pitch', 0)),
                 'text': bot_response
             }
-
+            
             # TTSRequest 생성
             tts_request = Message.objects.create(              
                 conversation = conversation,
@@ -164,3 +181,25 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             return Response({'error': 'Invalid JSON'}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# class CloseMessage(APIView):
+#     def post(self, request):
+#         data = json.loads(request.body)
+#         message = data.get('message')
+#         conversation_id = data.get('conversation_id')
+#         character_id = data.get('character_id')
+        
+        # conversation = get_object_or_404(Conversation, id=conversation_id)
+        # user_instance = request.user
+        # character_instance = get_object_or_404(Character, id=character_id)
+        
+#         summary_message = endChat(character_id)
+        
+#         summary_request = SummaryMessage.objects.create(
+#             conversation = conversation,
+#             user_sender = user_instance,
+#             character_sender = character_instance,
+#             message = summary_message
+#         )
+        
+#         summary_request.save()

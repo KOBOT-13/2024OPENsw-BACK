@@ -1,6 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from django.contrib.auth import views as auth_views
 from .views import *
+
 
 
 router = DefaultRouter()
@@ -13,10 +15,10 @@ urlpatterns = [
 
     # allauth
     path('accounts/', include('allauth.urls')),
-
+    path('auth/password_reset/', auth_views.PasswordResetView.as_view(), name ='password_reset'),
     # dj-rest-auth
     path('auth/registration/', RegisterView.as_view(), name='custom-registration'),
-    # path('auth/login/', CustomLoginView.as_view(), name='custom_login'),
+    path('auth/login/', CustomLoginView.as_view(), name='custom_login'),
     path('auth/logout/', CustomLogoutView.as_view(), name='custom-logout'),
     path('auth/', include('dj_rest_auth.urls')),
     # path('auth/registration/', include('dj_rest_auth.registration.urls')),

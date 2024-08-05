@@ -2,6 +2,8 @@ from django.contrib.sites import requests
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -9,7 +11,7 @@ from allauth.account.views import ConfirmEmailView
 from allauth.account.views import PasswordResetView
 from allauth.account.models import EmailConfirmationHMAC
 from allauth.account.models import EmailAddress
-from rest_framework import status
+from rest_framework import status, mixins
 from dj_rest_auth.views import LoginView
 from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -17,7 +19,9 @@ from django.contrib.auth import views as auth_views
 from ossKobot import settings
 from users.adapter import CustomAccountAdapter
 from rest_framework import generics
-from .serializers import CustomUserSerializer 
+
+from .models import CustomUser
+from .serializers import CustomUserSerializer, ProfileUpdateSerializer
 from allauth.account.utils import send_email_confirmation
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.http import urlsafe_base64_encode
@@ -161,11 +165,14 @@ class ProfileView(APIView):
 
     def get(self, request):
         user = request.user
+        profile_image = user.profile_image.url if user.profile_image else None
         return Response({
-            'id' : user.id,
+            'id': user.id,
             'email': user.email,
             'username': user.username,
-            'is_staff': user.is_staff
+            'is_staff': user.is_staff,
+            'birth_date': user.birth_date,
+            'profile_image': profile_image,
         })
     
 class PasswordResetRequestView(APIView):
@@ -173,7 +180,6 @@ class PasswordResetRequestView(APIView):
         email = request.data.get('email')
         if not email:
             return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
-
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
@@ -215,6 +221,21 @@ class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
         print("Form is invalid. Errors:", form.errors)
         return self.render_to_response(self.get_context_data(form=form))
     
+class ProfileUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
+    queryset = CustomUser.objects.all()
+    serializer_class = ProfileUpdateSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get_object(self):
+        return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
 #카카오톡 로그인 뷰
 """from django.shortcuts import render
 

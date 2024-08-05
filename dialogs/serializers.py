@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import Conversation, Message
+from .models import Conversation, Message, SummaryMessage
 
 class ConversationSerializer(serializers.ModelSerializer):
     book_title = serializers.SerializerMethodField()
     character_name = serializers.SerializerMethodField()
     class Meta:
         model = Conversation
-        fields = ['id', 'book', 'book_title', 'character', 'character_name', 'created_at']
+        fields = ['id', 'book', 'book_title', 'character', 'character_name', 'created_at', 'updated_at']
 
     def get_book_title(self, obj):
         return obj.book.title
@@ -14,6 +14,13 @@ class ConversationSerializer(serializers.ModelSerializer):
     def get_character_name(self, obj):
         return obj.character.name
 
+class SummaryMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SummaryMessage
+        fields = '__all__'
+        
+    def get_summary_message(self, obj):
+        return obj.message
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:

@@ -36,4 +36,5 @@ urlpatterns = [
     # path('kakao-user-info/', kakao_user_info, name='kakao-user-info'),
 
     path('profile/', ProfileView.as_view(), name='profile'),  # 프로필 URL 추가
+    path('profile/update/', ProfileUpdateView.as_view(), name='profile-update'),
 ]

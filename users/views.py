@@ -30,7 +30,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.utils.safestring import mark_safe
+from django.contrib import messages
+import re
 
 User = get_user_model()
 
@@ -213,14 +214,23 @@ class PasswordResetRequestView(APIView):
 
 class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     def form_valid(self, form):
+        password = form.cleaned_data.get('new_password1')
+        password_regex = re.compile(r'^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,32}$')
+
+        if not password_regex.match(password):
+            form.add_error('new_password1', '비밀번호는 8-32자리여야 하며, 최소 하나의 문자, 숫자 및 특수 문자를 포함해야 합니다.')
+            return self.form_invalid(form)
+
         form.save()  # 비밀번호 저장
-        print("Password reset was successful.")
+        print("비밀번호 재설정이 완료되었습니다.")
+        messages.success(self.request, '비밀번호가 성공적으로 재설정되었습니다.')
         return redirect('/api/users/password_reset/done/')
 
     def form_invalid(self, form):
-        print("Form is invalid. Errors:", form.errors)
+        print("폼이 유효하지 않습니다. 오류:", form.errors)
+        messages.error(self.request, '비밀번호 재설정 중 오류가 발생했습니다. 다시 시도해주세요.')
         return self.render_to_response(self.get_context_data(form=form))
-    
+
 class ProfileUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
     queryset = CustomUser.objects.all()
     serializer_class = ProfileUpdateSerializer

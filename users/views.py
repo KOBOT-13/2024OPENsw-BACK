@@ -1,17 +1,22 @@
 from django.contrib.sites import requests
 from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from allauth.account.views import ConfirmEmailView
+from allauth.account.views import PasswordResetView
 from allauth.account.models import EmailConfirmationHMAC
 from allauth.account.models import EmailAddress
 from rest_framework import status, mixins
 from dj_rest_auth.views import LoginView
 from django.contrib.auth import authenticate, login
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from django.contrib.auth import views as auth_views
+from ossKobot import settings
 from users.adapter import CustomAccountAdapter
 from rest_framework import generics
 
@@ -19,6 +24,13 @@ from .models import CustomUser
 from .serializers import CustomUserSerializer, ProfileUpdateSerializer
 from allauth.account.utils import send_email_confirmation
 from django.contrib.auth import authenticate, login, get_user_model
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe
 
 User = get_user_model()
 
@@ -87,7 +99,7 @@ class CustomConfirmEmailView(ConfirmEmailView):
         
         return super().dispatch(request, *args, **kwargs)
 
-'''class CustomLoginView(LoginView):
+class CustomLoginView(LoginView):
     def post(self, request, *args, **kwargs):
         print('custom login view call')
 
@@ -134,7 +146,7 @@ class CustomConfirmEmailView(ConfirmEmailView):
             return Response(
                 {"detail": "이메일 주소 또는 비밀번호가 잘못되었습니다."},
                 status=status.HTTP_400_BAD_REQUEST
-            )'''
+            )
 
 class CustomLogoutView(APIView):
     permission_classes = [IsAuthenticated]
@@ -162,7 +174,53 @@ class ProfileView(APIView):
             'birth_date': user.birth_date,
             'profile_image': profile_image,
         })
+    
+class PasswordResetRequestView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({'error': 'Email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({'error': 'User with this email does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        current_site = get_current_site(request)
+        domain = request.get_host()
+        protocol = 'https' if request.is_secure() else 'http'
+
+        # 비밀번호 재설정 링크를 먼저 생성
+        reset_link = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+        reset_url = f'{protocol}://{domain}{reset_link}'
+
+        mail_subject = '[아이랑 아이(AI)랑] 비밀번호 재설정 이메일'
+        message = render_to_string('account/email/password_reset_email.html', {
+            'user': user,
+            'reset_url': reset_url,
+        })
+        send_mail(
+            mail_subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False,
+            html_message=message
+        )
+
+        return Response({'success': '비밀번호 재설정 이메일이 전송되었습니다.'}, status=status.HTTP_200_OK)
+
+class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    def form_valid(self, form):
+        form.save()  # 비밀번호 저장
+        print("Password reset was successful.")
+        return redirect('/api/users/password_reset/done/')
+
+    def form_invalid(self, form):
+        print("Form is invalid. Errors:", form.errors)
+        return self.render_to_response(self.get_context_data(form=form))
+    
 class ProfileUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
     queryset = CustomUser.objects.all()
     serializer_class = ProfileUpdateSerializer

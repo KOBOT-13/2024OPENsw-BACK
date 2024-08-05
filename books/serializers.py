@@ -12,6 +12,33 @@ class MainPageBookSerializer(serializers.ModelSerializer):
         model = Book
         fields = ['book_id', 'title', 'cover_image']
 
+
+class UserBookCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserBook
+        fields = ['book', 'read_date']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        book = validated_data['book']
+        read_date = validated_data['read_date']
+
+        user_book, created = UserBook.objects.update_or_create(
+            user=user,
+            book=book,
+            defaults={'read_date': read_date}
+        )
+
+        return user_book
+
+
+class UserBookSerializer(serializers.ModelSerializer):
+    book = BookSerializer()  # 책 제목을 반환하기 위해 StringRelatedField 사용
+
+    class Meta:
+        model = UserBook
+        fields = ['book', 'read_date']
+
 class CharacterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Character

@@ -3,9 +3,6 @@ from django.db import models
 
 from django.contrib.auth.models import BaseUserManager
 
-# from books.models import Book
-
-
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
     def create_user(self, email, username, password, **extra_fields):
@@ -42,7 +39,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     date_joined = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    # mybook_list = models.ManyToManyField(Book, blank=True, related_name='users')
 
     objects = CustomUserManager()
 
@@ -57,3 +53,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return self.is_superuser
+

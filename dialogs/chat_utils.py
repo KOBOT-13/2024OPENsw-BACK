@@ -108,4 +108,4 @@ def chatbot(input_message, char_id, summary_message, end_key): # summary_message
         memory = ConversationSummaryBufferMemory(
     llm=ChatOpenAI(temperature=0), return_messages=True, max_token_limit=1000)
         return bot_response, summary_message
-    return bot_response
+    return bot_response, summary_message

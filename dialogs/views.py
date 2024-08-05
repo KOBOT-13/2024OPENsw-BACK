@@ -112,6 +112,7 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             end_key = summary_message.end_key
             bot_response, chat_summary_message = chatbot(input_message, character_id, summary_message.message, end_key)
             summary_message.message = chat_summary_message
+            summary_message.end_key = 1
             summary_message.save()
             
             print(summary_message)
@@ -186,24 +187,13 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-# class CloseMessage(APIView):
-#     def post(self, request):
-#         data = json.loads(request.body)
-#         message = data.get('message')
-#         conversation_id = data.get('conversation_id')
-#         character_id = data.get('character_id')
+class EndChat(APIView):
+    def post(self, request):
+        data = json.loads(request.body)
+        conversation_id = data.get("conversation_id")
         
-        # conversation = get_object_or_404(Conversation, id=conversation_id)
-        # user_instance = request.user
-        # character_instance = get_object_or_404(Character, id=character_id)
+        summary_message = get_object_or_404(SummaryMessage, id=conversation_id)
+        summary_message.end_key = 0
+        summary_message.save()
         
-#         summary_message = endChat(character_id)
-        
-#         summary_request = SummaryMessage.objects.create(
-#             conversation = conversation,
-#             user_sender = user_instance,
-#             character_sender = character_instance,
-#             message = summary_message
-#         )
-        
-#         summary_request.save()
+        return Response({'status': 'success', 'message': 'Chat ended successfully.'}, status=status.HTTP_200_OK)

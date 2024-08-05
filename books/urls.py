@@ -22,6 +22,7 @@ urlpatterns = [
     path('comments/<int:pk>/liked_users/', CommentViewSet.as_view({'get': 'liked_users'}), name='comment-liked-users'),
     path('<int:book_id>/characters/', BookCharactersAPIView.as_view(), name='book-characters'),
     path('AllBooks/', MainPageAllBooksAPIView.as_view(), name='main-page-all-books'),
-    path('MyBooks/', MainPageMybooksAPIView.as_view(), name='main-page-my-books'),
+    path('user-read-book-list/add/', UserReadBookCreateAPIView.as_view(), name='user-read-book-create'),
+    path('user-read-book-list/get/', UserReadBooksAPIView.as_view(), name='user-read-books'),
     # ex) path('pages/<int:year>/', AllPagesView.as_view(), name='all-pages-list'),
 ]

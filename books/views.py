@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
+from django.utils.timezone import now
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListAPIView
@@ -36,13 +37,25 @@ class MainPageAllBooksAPIView(APIView):
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
 
-class MainPageMybooksAPIView(APIView):
+class UserReadBookCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = UserBookCreateSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserReadBooksAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         user = request.user
-        my_books = user.mybook_list.all()
-        serializer = MainPageBookSerializer(my_books, many=True)
+        user_books = UserBook.objects.filter(user=user)
+        serializer = UserBookSerializer(user_books, many=True)
         return Response(serializer.data)
+
 
 class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
     queryset = Post.objects.all()

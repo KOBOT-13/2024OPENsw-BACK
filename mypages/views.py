@@ -25,17 +25,18 @@ class SaveQuizRecordView(APIView):
 
     def post(self, request, quiz_id):
         user = request.user
-        quiz = Quiz.objects.get(id=quiz_id)
+        # quiz = Quiz.objects.get(id=quiz_id)
+        book = request.book
         score = request.data.get('score')
         completed_at = timezone.now() # 현재 시간
         
         quiz_record = QuizRecord.objects.create(
             user=user,
-            quiz=quiz,
+            # quiz=quiz,
             score=score,
             completed_at=completed_at,
-            book_title=quiz.book.title,
-            book_cover_image=quiz.book.cover_image
+            book_title=book.title,
+            book_cover_image=book.cover_image
         )
         
         return Response({'message': 'Quiz record saved successfully'}, status=status.HTTP_201_CREATED)

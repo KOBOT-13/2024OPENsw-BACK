@@ -10,7 +10,7 @@ class BookSerializer(serializers.ModelSerializer):
 class MainPageBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ['book_id', 'title', 'cover_image']
+        fields = ['id', 'title', 'cover_image']
 
 
 class UserBookCreateSerializer(serializers.ModelSerializer):

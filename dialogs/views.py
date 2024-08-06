@@ -31,6 +31,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
         user = request.user
         book_id = request.data.get('book')
         character_id = request.data.get('character')
+        character_instance = get_object_or_404(Character, id=character_id)
         
         print(f"Received request to start conversation: user={user}, book_id={book_id}, character_id={character_id}")
         
@@ -40,6 +41,9 @@ class ConversationViewSet(viewsets.ModelViewSet):
         if existing_conversation:
             print(f"Found existing conversation: {existing_conversation.id}")
             serializer = self.get_serializer(existing_conversation)
+            summary_message = get_object_or_404(SummaryMessage, character_sender = character_instance)
+            summary_message.end_key = 1
+            summary_message.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         # Create a new conversation if it does not exist
@@ -48,7 +52,6 @@ class ConversationViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             self.perform_create(serializer)
             print(f"Created new conversation: {serializer.instance.id}")
-            character_instance = get_object_or_404(Character, id=character_id)
         
             default_summary_message = SummaryMessage.objects.create(
                 user_sender = user,
@@ -112,7 +115,7 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             end_key = summary_message.end_key
             bot_response, chat_summary_message = chatbot(input_message, character_id, summary_message.message, end_key)
             summary_message.message = chat_summary_message
-            summary_message.end_key = 1
+            summary_message.end_key = 0
             summary_message.save()
             
             print(summary_message)

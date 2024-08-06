@@ -1,5 +1,3 @@
-from django.contrib.sites import requests
-from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
@@ -8,7 +6,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from allauth.account.views import ConfirmEmailView
-from allauth.account.views import PasswordResetView
 from allauth.account.models import EmailConfirmationHMAC
 from allauth.account.models import EmailAddress
 from rest_framework import status, mixins

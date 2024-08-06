@@ -25,6 +25,19 @@ class ConversationViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        conversations = self.get_queryset()
+        response_data = []
+
+        for conversation in conversations:
+            if not conversation.has_messages():
+                conversation.delete()
+            else:
+                serializer = self.get_serializer(conversation)
+                response_data.append(serializer.data)
+
+        return Response(response_data, status=status.HTTP_200_OK)
         
     @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def start_conversation(self, request):

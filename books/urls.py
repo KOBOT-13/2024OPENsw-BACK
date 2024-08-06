@@ -14,10 +14,10 @@ router.register('book_requests', BookRequestViewSet, basename='book_request')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('books/<int:book_id>/posts/', AllPostByBookView.as_view(), name='book_posts'),
+    path('books/<int:book_id>/posts/', AllPostByBookView.as_view(), name='book-posts'),
     path('my_posts/', AllPostByUserView.as_view(), name='user-posts'),
     path('books/<int:book_id>/comments/', AllCommentsByBookView.as_view(), name='book-comments'),
-    path('my_comments/', AllCommentsByUserView.as_view(), name='usercomments'),
+    path('my_comments/', AllCommentsByUserView.as_view(), name='user-comments'),
     path('comments/<int:pk>/like/', CommentViewSet.as_view({'post': 'like'}), name='comment-like'),
     path('comments/<int:pk>/liked_users/', CommentViewSet.as_view({'get': 'liked_users'}), name='comment-liked-users'),
     path('<int:book_id>/characters/', BookCharactersAPIView.as_view(), name='book-characters'),

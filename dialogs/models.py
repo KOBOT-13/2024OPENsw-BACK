@@ -14,6 +14,9 @@ class Conversation(models.Model):
     def __str__(self):
         return f"Conversation between {self.user.username} and {self.character.name} in {self.book.title}"
     
+    def has_messages(self):
+        return self.messages.exists()
+
 class Message(models.Model):
     SENDER_TYPE_CHOICES = [
         ('user', 'User'),

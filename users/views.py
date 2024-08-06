@@ -16,7 +16,7 @@ from django.contrib.auth import views as auth_views
 from ossKobot import settings
 from users.adapter import CustomAccountAdapter
 from rest_framework import generics
-
+from django.utils.http import urlsafe_base64_decode
 from .models import CustomUser
 from .serializers import CustomUserSerializer, ProfileUpdateSerializer
 from allauth.account.utils import send_email_confirmation
@@ -185,6 +185,7 @@ class PasswordResetRequestView(APIView):
 
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
+        request.session['password_reset_token'] = token
         current_site = get_current_site(request)
         domain = request.get_host()
         protocol = 'https' if request.is_secure() else 'http'
@@ -210,6 +211,30 @@ class PasswordResetRequestView(APIView):
         return Response({'success': '비밀번호 재설정 이메일이 전송되었습니다.'}, status=status.HTTP_200_OK)
 
 class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    def dispatch(self, request, *args, **kwargs):
+        # URL에서 uidb64와 token을 가져오기
+        uidb64 = kwargs.get('uidb64')
+        token = request.session.get('password_reset_token')
+
+        # uidb64를 디코드하여 user ID를 복원
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        # 토큰 유효성 검사
+        if user is not None and default_token_generator.check_token(user, token):
+            # 토큰이 유효하면, user와 token을 설정
+            self.user = user
+            self.token = token
+        else:
+            # 토큰이 유효하지 않으면, 오류 페이지로 리다이렉트
+            return render(request, 'account/email/password_reset_invalid.html')
+
+        # 나머지 dispatch 처리
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         password = form.cleaned_data.get('new_password1')
         password_regex = re.compile(r'^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,32}$')

@@ -9,6 +9,9 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Starting to load data...'))
 
         # call_command를 사용하여 각 관리 명령어를 호출합니다.
+        call_command('load_tags')
+        self.stdout.write(self.style.SUCCESS('Loaded tags data'))
+
         call_command('load_books')
         self.stdout.write(self.style.SUCCESS('Loaded books data'))
 

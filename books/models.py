@@ -3,6 +3,11 @@ from django.conf import settings
 
 from ossKobot import settings
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)  # 태그 이름
+
+    def __str__(self):
+        return self.name
 
 class Book(models.Model):
     id = models.AutoField(primary_key=True) # id
@@ -12,6 +17,7 @@ class Book(models.Model):
     publication_date = models.DateField(blank=True, null=True) # 출판일자
     cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True)  # 책 사진
     synopsis = models.TextField(blank=True)  # 줄거리
+    tags = models.ManyToManyField(Tag, related_name='books', blank=True)  # 태그 필드
 
     def __str__(self):
         return self.title

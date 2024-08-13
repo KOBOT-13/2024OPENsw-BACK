@@ -2,15 +2,34 @@ from rest_framework import serializers
 from .models import *
 
 
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'name']
+
 class BookSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True, read_only=True)
     class Meta:
         model = Book
         fields = '__all__'
 
+    def create(self, validated_data):
+        tag_ids = validated_data.pop('tag_ids', [])
+        book = Book.objects.create(**validated_data)
+        book.tags.set(tag_ids)
+        return book
+
+    def update(self, instance, validated_data):
+        tag_ids = validated_data.pop('tag_ids', [])
+        instance = super().update(instance, validated_data)
+        instance.tags.set(tag_ids)
+        return instance
+
+
 class MainPageBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ['id', 'title', 'cover_image']
+        fields = ['id', 'title', 'cover_image', 'tags']
 
 
 class UserBookCreateSerializer(serializers.ModelSerializer):

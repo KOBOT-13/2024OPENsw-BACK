@@ -56,7 +56,6 @@ class UserReadBooksAPIView(APIView):
         serializer = UserBookSerializer(user_books, many=True)
         return Response(serializer.data)
 
-
 class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -132,3 +131,10 @@ class BookRequestViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(requested_by=self.request.user)
+
+class BookListByTagView(generics.ListAPIView):
+    serializer_class = BookSerializer
+
+    def get_queryset(self):
+        tag_id = self.kwargs['tag_id']
+        return Book.objects.filter(tags__id=tag_id)

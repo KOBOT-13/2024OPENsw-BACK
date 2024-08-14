@@ -79,13 +79,13 @@ class ToggleWishlistAPIView(APIView):
         except Book.DoesNotExist:
             return Response({"error": "책을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
-class UserWishlistAPIView(ListAPIView):
+class UserWishlistAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = WishlistSerializer
 
-    def get_queryset(self):
-        user = self.request.user
-        return Wishlist.objects.filter(user=user)
+    def get(self, request):
+        user = request.user
+        wishlist_items = Wishlist.objects.filter(user=user).values_list('book_id', flat=True)
+        return Response(list(wishlist_items))
 
 class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
     queryset = Post.objects.all()

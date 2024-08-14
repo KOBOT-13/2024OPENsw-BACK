@@ -69,12 +69,11 @@ class UserBookSerializer(serializers.ModelSerializer):
 
 
 class WishlistSerializer(serializers.ModelSerializer):
-    book_title = serializers.CharField(source='book.title')
-    book_cover_image = serializers.ImageField(source='book.cover_image')
+    book_id = serializers.IntegerField(source='book.id')
 
     class Meta:
         model = Wishlist
-        fields = ['book_title', 'book_cover_image']
+        fields = ['book_id']
 
 class CharacterSerializer(serializers.ModelSerializer):
     class Meta:

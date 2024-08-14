@@ -17,6 +17,7 @@ urlpatterns = [
     path('books/<int:book_id>/posts/', AllPostByBookView.as_view(), name='book-posts'),
     path('my_posts/', AllPostByUserView.as_view(), name='user-posts'),
     path('books/<int:book_id>/comments/', AllCommentsByBookView.as_view(), name='book-comments'),
+    path('search/', BookSearchView.as_view(), name='book-search'),
     path('tag/<int:tag_id>/', BookListByTagView.as_view(), name='books_by_tag'),
     path('my_comments/', AllCommentsByUserView.as_view(), name='user-comments'),
     path('comments/<int:pk>/like/', CommentViewSet.as_view({'post': 'like'}), name='comment-like'),

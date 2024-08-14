@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         users = [
-            {'email': 'admin@admin.com', 'username': 'admin', 'password': 'password', 'is_staff': True, 'is_superuser': True},
+            {'email': 'admin@admin.com', 'username': 'admin', 'password': 'password', 'is_staff': True,  'is_superuser': True, 'is_verified': True},
 
              # 더 많은 유저 데이터를 여기에 추가합니다.
         ]

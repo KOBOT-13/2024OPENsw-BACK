@@ -55,9 +55,47 @@ class UserReadBooksAPIView(APIView):
 
     def get(self, request):
         user = request.user
-        user_books = UserBook.objects.filter(user=user)
+        user_books = UserBook.objects.filter(user=user).order_by('-read_date')
         serializer = UserBookSerializer(user_books, many=True)
         return Response(serializer.data)
+
+class ToggleWishlistAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, book_id):
+        user = request.user
+
+        try:
+            # Wishlist에서 해당 유저와 책을 찾음
+            wishlist_item = Wishlist.objects.filter(user=user, book_id=book_id).first()
+
+            if wishlist_item:
+                # 존재하면 삭제 (찜 취소)
+                wishlist_item.delete()
+                return Response({"message": "찜 목록에서 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+            else:
+                # 존재하지 않으면 추가
+                Wishlist.objects.create(user=user, book_id=book_id)
+                return Response({"message": "찜 목록에 추가되었습니다."}, status=status.HTTP_201_CREATED)
+
+        except Book.DoesNotExist:
+            return Response({"error": "책을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+class UserWishlistAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        wishlist_items = Wishlist.objects.filter(user=user).values_list('book_id', flat=True)
+        return Response(list(wishlist_items))
+
+class UserRecommendlistAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        recommend_items = RecommendBook.objects.filter(user=user).values_list('book_id', flat=True)
+        return Response(list(recommend_items))
 
 class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
     queryset = Post.objects.all()

@@ -1,3 +1,4 @@
+from django.utils import timezone
 from rest_framework import serializers
 from .models import *
 
@@ -35,28 +36,51 @@ class MainPageBookSerializer(serializers.ModelSerializer):
 class UserBookCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserBook
-        fields = ['book', 'read_date']
+        fields = ['book']
 
     def create(self, validated_data):
         user = self.context['request'].user
         book = validated_data['book']
-        read_date = validated_data['read_date']
+        read_date = timezone.now()  # 현재 시간을 사용하여 read_date 설정
+        print(read_date)
 
-        user_book, created = UserBook.objects.update_or_create(
+        # 동일한 책이 이미 존재하는 경우 업데이트
+        user_book_instance, created = UserBook.objects.update_or_create(
             user=user,
             book=book,
             defaults={'read_date': read_date}
         )
+        print(user_book_instance)
 
-        return user_book
+        return user_book_instance
 
 
 class UserBookSerializer(serializers.ModelSerializer):
-    book = BookSerializer()  # 책 제목을 반환하기 위해 StringRelatedField 사용
+    book = BookSerializer()  # 책 제목을 반환하기 위해 BookSerializer 사용
+    # read_date = serializers.SerializerMethodField()
 
     class Meta:
         model = UserBook
         fields = ['book', 'read_date', 'weight', 'speeling']
+
+    # def get_read_date(self, obj):
+    #     # read_date를 날짜 형식으로 반환
+    #     return obj.read_date.strftime('%Y-%m-%d')
+
+
+class WishlistSerializer(serializers.ModelSerializer):
+    book_id = serializers.IntegerField(source='book.id')
+
+    class Meta:
+        model = Wishlist
+        fields = ['book_id']
+
+class RecommendBookSerializer(serializers.ModelSerializer):
+    book_id = serializers.IntegerField(source='book.id')
+
+    class Meta:
+        model = RecommendBook
+        fields = ['book_id']
 
 class CharacterSerializer(serializers.ModelSerializer):
     class Meta:

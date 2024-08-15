@@ -26,5 +26,7 @@ urlpatterns = [
     path('AllBooks/', MainPageAllBooksAPIView.as_view(), name='main-page-all-books'),
     path('user-read-book-list/add/', UserReadBookCreateAPIView.as_view(), name='user-read-book-create'),
     path('user-read-book-list/get/', UserReadBooksAPIView.as_view(), name='user-read-books'),
-    # ex) path('pages/<int:year>/', AllPagesView.as_view(), name='all-pages-list'),
+    path('wishlist/toggle/<int:book_id>/', ToggleWishlistAPIView.as_view(), name='toggle-wishlist'),
+    path('wishlist/', UserWishlistAPIView.as_view(), name='user-wishlist'),
+    path('recommendlist/', UserRecommendlistAPIView.as_view(), name='user-recommendlist'),
 ]

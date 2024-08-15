@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 from ossKobot import settings
 
@@ -9,6 +10,14 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+CATEGORY_CHOICE = {
+    ('fantasy', '판타지'),
+    ('novel', '소설'),
+    ('picture book', '그림책'),
+    ('biography', '위인전'),
+    ('traditional fairy tale', '전래동화'),
+    ('fable', '우화'),
+}
 class Book(models.Model):
     id = models.AutoField(primary_key=True) # id
     title = models.CharField(max_length=200)  # 책 제목
@@ -17,7 +26,8 @@ class Book(models.Model):
     publication_date = models.DateField(blank=True, null=True) # 출판일자
     cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True)  # 책 사진
     synopsis = models.TextField(blank=True)  # 줄거리
-    tags = models.ManyToManyField(Tag, related_name='books', blank=True)  # 태그 필드
+    category = models.CharField(verbose_name='카테고리', choices=CATEGORY_CHOICE, blank=True, null=True)
+    tags = models.ManyToManyField(Tag, related_name='books', blank=True)  # 태그
 
     def __str__(self):
         return self.title
@@ -92,4 +102,25 @@ class UserBook(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.book.title} read {self.read_date}'
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reader_wishThisbook', on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, related_name='books_wishlisted', on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'book')
+
+    def __str__(self):
+        return f'{self.user.username} - {self.book.title} press wish at {self.read_date}'
+
+class RecommendBook(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reader_recommendBook', on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, related_name='books_recommended', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'book')
+
+    def __str__(self):
+        return f'Recommend {self.user.username} to {self.book.title}'
 

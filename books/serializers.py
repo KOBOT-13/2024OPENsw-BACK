@@ -91,12 +91,6 @@ class WishlistSerializer(serializers.ModelSerializer):
         model = Wishlist
         fields = ['book_id']
 
-class RecommendBookSerializer(serializers.ModelSerializer):
-    book_id = serializers.IntegerField(source='book.id')
-
-    class Meta:
-        model = RecommendBook
-        fields = ['book_id']
 
 class CharacterSerializer(serializers.ModelSerializer):
     class Meta:

@@ -19,11 +19,8 @@ def compute_content_similarity(books):
     tfidf_vectorizer_lesson = TfidfVectorizer()
     tfidf_matrix_lesson = tfidf_vectorizer_lesson.fit_transform(books['lesson'])
     cosine_sim_lesson = cosine_similarity(tfidf_matrix_lesson, tfidf_matrix_lesson)
-    
-  
     genre_matrix = pd.get_dummies(books['genre'])
     cosine_sim_genre = cosine_similarity(genre_matrix, genre_matrix)
-    
     alpha = 0.5  # Adjust weight for genre vs lesson
     combined_similarity = alpha * cosine_sim_lesson + (1 - alpha) * cosine_sim_genre
     return combined_similarity
@@ -91,3 +88,4 @@ def hybrid_recommendation(user_titles, user_ratings, books, content_similarity, 
 #
 # print("\n하이브리드 추천:")
 # print(hybrid_recommendations[['title']])
+

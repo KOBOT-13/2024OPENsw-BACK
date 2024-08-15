@@ -8,11 +8,27 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ['id', 'name']
 
+CATEGORY_CHOICE = {
+    ('fantasy', '판타지'),
+    ('novel', '소설'),
+    ('picture book', '그림책'),
+    ('biography', '위인전'),
+    ('traditional fairy tale', '전래동화'),
+    ('fable', '우화'),
+}
+
 class BookSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     class Meta:
         model = Book
         fields = '__all__'
+        
+    def to_representation(self, instance):
+        # 데이터를 클라이언트로 반환할 때 호출됨
+        ret = super().to_representation(instance)
+        # 카테고리 필드를 한글로 변환하여 반환
+        ret['category'] = dict(CATEGORY_CHOICE).get(instance.category, instance.category)
+        return ret
 
     def create(self, validated_data):
         tag_ids = validated_data.pop('tag_ids', [])
@@ -30,7 +46,7 @@ class BookSerializer(serializers.ModelSerializer):
 class MainPageBookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
-        fields = ['id', 'title', 'cover_image', 'tags']
+        fields = ['id', 'title', 'cover_image', 'tags', 'category']
 
 
 class UserBookCreateSerializer(serializers.ModelSerializer):
@@ -61,7 +77,7 @@ class UserBookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserBook
-        fields = ['book', 'read_date']
+        fields = ['book', 'read_date', 'weight', 'speeling']
 
     # def get_read_date(self, obj):
     #     # read_date를 날짜 형식으로 반환

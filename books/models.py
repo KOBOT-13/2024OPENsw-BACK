@@ -93,15 +93,15 @@ class BookRequest(models.Model):
 class UserBook(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reader_thisbook', on_delete=models.CASCADE)
     book = models.ForeignKey(Book, related_name='books_readByUser', on_delete=models.CASCADE)
-    read_date = models.DateTimeField()
+    read_date = models.DateField()
     weight = models.FloatField(default=0.5)
+    spelling = models.FloatField(default=1)
 
     class Meta:
         unique_together = ('user', 'book')
 
     def __str__(self):
         return f'{self.user.username} - {self.book.title} read {self.read_date}'
-
 
 class Wishlist(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reader_wishThisbook', on_delete=models.CASCADE)
@@ -120,3 +120,4 @@ class RecommendBooks(models.Model):
 
     def __str__(self):
         return f'Recommend {self.user.username} to {self.books}'
+

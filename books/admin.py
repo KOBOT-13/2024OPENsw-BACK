@@ -10,3 +10,4 @@ admin.site.register(BookRequest)
 admin.site.register(UserBook)
 admin.site.register(Wishlist)
 admin.site.register(RecommendBooks)
+

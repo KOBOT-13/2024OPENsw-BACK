@@ -75,6 +75,7 @@ class WishlistSerializer(serializers.ModelSerializer):
         model = Wishlist
         fields = ['book_id']
 
+
 class CharacterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Character

@@ -1,3 +1,4 @@
+import pandas as pd
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.utils.timezone import now
@@ -9,12 +10,24 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, viewsets, generics, permissions
 from django.db.models import Q
+from datetime import datetime
 
 from .models import *
+from .recommned_utils import *
 from .serializers import *
 from django.conf import settings
 
 # Create your views here.
+books = pd.read_csv('books/recommend/fairytale_data - Sheet1 (3).csv')
+content_similarity = compute_content_similarity(books)
+
+def get_user_age(self, birth_date):
+    """생년월일을 이용해 나이를 계산하는 함수"""
+    if birth_date is None:
+        return None
+    today = datetime.today()
+    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+    return age
 
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
@@ -47,6 +60,66 @@ class UserReadBookCreateAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class BookRecommendationAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        # 1. 미리 계산된 책 데이터와 유사도 사용
+        global books, content_similarity  # 전역 변수로 미리 로드된 데이터 사용
+
+        # 2. 사용자의 읽은 책 목록과 호감도(weight) 가져오기
+        user_books = UserBook.objects.filter(user=request.user)
+
+        if not user_books.exists():
+            return Response({"error": "사용자가 읽은 책 목록이 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 3. user_data 생성
+        user_titles = []
+        user_ratings = []
+        user_age = self.get_user_age(request.user.birth_date)
+
+        if user_age is None:
+            return Response({"error": "생년월일 정보가 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        for user_book in user_books:
+            user_titles.append(user_book.book.title)
+            user_ratings.append(user_book.weight)
+
+        user_data = pd.DataFrame({
+            'user_id': [request.user.id] * len(user_titles),
+            'age': [user_age] * len(user_titles),
+            'title': user_titles,
+            'rating': user_ratings
+        })
+
+        # 4. 사용자 유사도 계산 (이 부분은 요청마다 다를 수 있음)
+        user_similarity = compute_user_similarity(user_data, books)
+
+        # 5. 추천 시스템 실행
+        recommended_books = hybrid_recommendation(user_titles, user_ratings, books, content_similarity, user_similarity)
+
+        # 6. 추천된 책의 제목을 기반으로 Book 모델에서 ID 조회
+        recommended_titles = recommended_books['title'].tolist()
+        recommended_ids = Book.objects.filter(title__in=recommended_titles).values_list('id', flat=True)
+
+        # 7. 추천 결과를 RecommendBooks에 저장
+        RecommendBooks.objects.create(user=request.user, recommended_books=recommended_ids)
+
+        # 8. 추천된 책의 ID 리스트 반환
+        return Response({"recommended_book_ids": list(recommended_ids)}, status=status.HTTP_200_OK)
+
+
+class LastRecommendationAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            last_recommendation = RecommendBooks.objects.filter(user=request.user).latest('created_at')
+            return Response({"recommended_book_ids": last_recommendation.recommended_books}, status=status.HTTP_200_OK)
+        except RecommendBooks.DoesNotExist:
+            return Response({"error": "추천 기록이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
 class UserReadBooksAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -86,6 +159,8 @@ class UserWishlistAPIView(APIView):
         user = request.user
         wishlist_items = Wishlist.objects.filter(user=user).values_list('book_id', flat=True)
         return Response(list(wishlist_items))
+
+
 
 class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
     queryset = Post.objects.all()
@@ -186,3 +261,4 @@ class BookSearchView(generics.ListAPIView):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+

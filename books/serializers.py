@@ -61,7 +61,7 @@ class UserBookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserBook
-        fields = ['book', 'read_date']
+        fields = ['book', 'read_date', 'weight', 'speeling']
 
     # def get_read_date(self, obj):
     #     # read_date를 날짜 형식으로 반환

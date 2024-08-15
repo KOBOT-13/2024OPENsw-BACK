@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils.timezone import now
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
@@ -13,6 +13,8 @@ from django.db.models import Q
 from .models import *
 from .serializers import *
 from django.conf import settings
+
+from .emotion_analysis import *
 
 # Create your views here.
 
@@ -102,7 +104,15 @@ class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
+        user = self.request.user
+        book_id = serializer.data.get('book')
+        post = serializer.data.get('body')
+        print(post)
+        analysis = emotion_analysis(post)
+        print(analysis)
+        book_post = get_object_or_404(UserBook, user=user, book=book_id)
+        book_post.weight = analysis
+        book_post.save()
 
 class AllPostByBookView(ListAPIView): # 특정 책에 대한 모든 독후감
     serializer_class = PostSerializer

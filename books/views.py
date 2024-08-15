@@ -87,6 +87,14 @@ class UserWishlistAPIView(APIView):
         wishlist_items = Wishlist.objects.filter(user=user).values_list('book_id', flat=True)
         return Response(list(wishlist_items))
 
+class UserRecommendlistAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        recommend_items = RecommendBook.objects.filter(user=user).values_list('book_id', flat=True)
+        return Response(list(recommend_items))
+
 class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
     queryset = Post.objects.all()
     serializer_class = PostSerializer

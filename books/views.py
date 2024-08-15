@@ -25,6 +25,7 @@ content_similarity = compute_content_similarity(books)
 
 def get_user_age(self, birth_date):
     """생년월일을 이용해 나이를 계산하는 함수"""
+    print(birth_date)
     if birth_date is None:
         return None
     today = datetime.today()
@@ -53,18 +54,17 @@ class MainPageAllBooksAPIView(APIView):
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
 
-class UserReadBookCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        serializer = UserBookCreateSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class BookRecommendationAPIView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def get_user_age(self, birth_date):
+        """생년월일을 이용해 나이를 계산하는 함수"""
+        print(birth_date)
+        if birth_date is None:
+            return None
+        today = datetime.today()
+        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+        return age
 
     def get(self, request):
 
@@ -76,6 +76,8 @@ class BookRecommendationAPIView(APIView):
 
         if not user_books.exists():
             return Response({"error": "사용자가 읽은 책 목록이 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        print(request.user.birth_date)
 
         # 3. user_data 생성
         user_titles = []
@@ -104,25 +106,38 @@ class BookRecommendationAPIView(APIView):
 
         # 6. 추천된 책의 제목을 기반으로 Book 모델에서 ID 조회
         recommended_titles = recommended_books['title'].tolist()
-        recommended_ids = Book.objects.filter(title__in=recommended_titles).values_list('id', flat=True)
+        recommended_ids = list(Book.objects.filter(title__in=recommended_titles).values_list('id', flat=True))
 
-        # 7. 추천 결과를 RecommendBooks에 저장
+        # 7. 기존 추천 결과 삭제
+        RecommendBooks.objects.filter(user=request.user).delete()
+
+        # 8. 추천 결과를 RecommendBooks에 저장
         RecommendBooks.objects.create(user=request.user, recommended_books=recommended_ids)
 
-        # 8. 추천된 책의 ID 리스트 반환
+        # 9. 추천된 책의 ID 리스트 반환
         return Response({"recommended_book_ids": list(recommended_ids)}, status=status.HTTP_200_OK)
 
 
-class LastRecommendationAPIView(APIView):
+class RecommendationAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:
-            last_recommendation = RecommendBooks.objects.filter(user=request.user).latest('created_at')
-            return Response({"recommended_book_ids": last_recommendation.recommended_books}, status=status.HTTP_200_OK)
+            recommendation = RecommendBooks.objects.filter(user=request.user).first()
+            return Response({"recommended_book_ids": recommendation.recommended_books}, status=status.HTTP_200_OK)
         except RecommendBooks.DoesNotExist:
             return Response({"error": "추천 기록이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
+class UserReadBookCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = UserBookCreateSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+[]
 class UserReadBooksAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

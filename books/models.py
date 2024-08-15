@@ -84,6 +84,8 @@ class UserBook(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reader_thisbook', on_delete=models.CASCADE)
     book = models.ForeignKey(Book, related_name='books_readByUser', on_delete=models.CASCADE)
     read_date = models.DateField()
+    weight = models.FloatField(default=0.5)
+    spelling = models.FloatField(default=1)
 
     class Meta:
         unique_together = ('user', 'book')

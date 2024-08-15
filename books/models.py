@@ -101,7 +101,6 @@ class UserBook(models.Model):
     def __str__(self):
         return f'{self.user.username} - {self.book.title} read {self.read_date}'
 
-
 class Wishlist(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reader_wishThisbook', on_delete=models.CASCADE)
     book = models.ForeignKey(Book, related_name='books_wishlisted', on_delete=models.CASCADE)
@@ -112,4 +111,14 @@ class Wishlist(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.book.title} press wish at {self.read_date}'
+
+class RecommendBook(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reader_recommendBook', on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, related_name='books_recommended', on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'book')
+
+    def __str__(self):
+        return f'Recommend {self.user.username} to {self.book.title}'
 

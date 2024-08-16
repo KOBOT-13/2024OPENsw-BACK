@@ -494,5 +494,6 @@ templates/*
 
 /templates/
 delete_migrations.py
+kobert_fine_tuning_weight/
+kobert_fine_tuning_weight/*
 
-kobert_fine_tuning_weight

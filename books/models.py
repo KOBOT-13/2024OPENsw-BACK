@@ -119,5 +119,5 @@ class RecommendBooks(models.Model):
     recommended_books = models.JSONField()
 
     def __str__(self):
-        return f'Recommend {self.user.username} to {self.books}'
+        return f'Recommend {self.user.username}'
 

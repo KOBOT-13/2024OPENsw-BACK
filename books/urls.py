@@ -29,5 +29,5 @@ urlpatterns = [
     path('wishlist/toggle/<int:book_id>/', ToggleWishlistAPIView.as_view(), name='toggle-wishlist'),
     path('wishlist/', UserWishlistAPIView.as_view(), name='user-wishlist'),
     path('recommend/', BookRecommendationAPIView.as_view(), name='book-recommendation'),
-    path('recommend/list/', LastRecommendationAPIView.as_view(), name='last-recommendation'),
+    path('recommend/list/', RecommendationAPIView.as_view(), name='last-recommendation'),
 ]

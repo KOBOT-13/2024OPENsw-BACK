@@ -25,9 +25,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         characters_data = [
-            {"name": "첫째 돼지", "book_id": 1, "character_image":"첫째돼지.png"},
-            {"name": "둘째 돼지", "book_id": 1, "character_image":"둘째돼지.png"},
-            {"name": "셋째 돼지", "book_id": 1, "character_image":"셋째돼지.png"},
+            {"name": "첫째 돼지", "book_id": 1, "character_image":"character/첫째돼지.png"},
+            {"name": "둘째 돼지", "book_id": 1, "character_image":"character/둘째돼지.png"},
+            {"name": "셋째 돼지", "book_id": 1, "character_image":"character/셋째돼지.png"},
             {"name": "늑대", "book_id": 1, "character_image":"character/늑대.png"},
             {"name": "백설공주", "book_id": 2, "character_image":"character/백설공주.png"},
             {"name": "새 왕비", "book_id": 2, "character_image":"character/왕비.png"},

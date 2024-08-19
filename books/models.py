@@ -28,6 +28,7 @@ class Book(models.Model):
     synopsis = models.TextField(blank=True)  # 줄거리
     category = models.CharField(verbose_name='카테고리', choices=CATEGORY_CHOICE, blank=True, null=True)
     tags = models.ManyToManyField(Tag, related_name='books', blank=True)  # 태그
+    wish_count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title

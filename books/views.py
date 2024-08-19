@@ -161,14 +161,23 @@ class ToggleWishlistAPIView(APIView):
         try:
             # Wishlist에서 해당 유저와 책을 찾음
             wishlist_item = Wishlist.objects.filter(user=user, book_id=book_id).first()
+            book = Book.objects.filter(id=book_id).first()
+            print(book)
+            print(book.wish_count)
+
+
 
             if wishlist_item:
                 # 존재하면 삭제 (찜 취소)
                 wishlist_item.delete()
+                book.wish_count -= 1
+                book.save()
                 return Response({"message": "찜 목록에서 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
             else:
                 # 존재하지 않으면 추가
                 Wishlist.objects.create(user=user, book_id=book_id)
+                book.wish_count += 1
+                book.save()
                 return Response({"message": "찜 목록에 추가되었습니다."}, status=status.HTTP_201_CREATED)
 
         except Book.DoesNotExist:

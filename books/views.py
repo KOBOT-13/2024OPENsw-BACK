@@ -107,6 +107,8 @@ class BookRecommendationAPIView(APIView):
         # 6. 추천된 책의 제목을 기반으로 Book 모델에서 ID 조회
         recommended_titles = recommended_books['title'].tolist()
         recommended_ids = list(Book.objects.filter(title__in=recommended_titles).values_list('id', flat=True))
+        recommended_objects = Book.objects.filter(title__in=recommended_titles)
+        serializer = BookSerializer(recommended_objects, many=True)
 
         # 7. 기존 추천 결과 삭제
         RecommendBooks.objects.filter(user=request.user).delete()
@@ -114,8 +116,8 @@ class BookRecommendationAPIView(APIView):
         # 8. 추천 결과를 RecommendBooks에 저장
         RecommendBooks.objects.create(user=request.user, recommended_books=recommended_ids)
 
-        # 9. 추천된 책의 ID 리스트 반환
-        return Response({"recommended_book_ids": list(recommended_ids)}, status=status.HTTP_200_OK)
+        # 9. 추천된 책들의 정보 반환
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class RecommendationAPIView(APIView):
@@ -124,7 +126,10 @@ class RecommendationAPIView(APIView):
     def get(self, request):
         try:
             recommendation = RecommendBooks.objects.filter(user=request.user).first()
-            return Response({"recommended_book_ids": recommendation.recommended_books}, status=status.HTTP_200_OK)
+            book_ids = recommendation.recommended_books
+            book_objects = Book.objects.filter(id__in=book_ids)
+            serializer=BookSerializer(book_objects, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except RecommendBooks.DoesNotExist:
             return Response({"error": "추천 기록이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -137,7 +142,7 @@ class UserReadBookCreateAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-[]
+
 class UserReadBooksAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -174,8 +179,11 @@ class UserWishlistAPIView(APIView):
 
     def get(self, request):
         user = request.user
-        wishlist_items = Wishlist.objects.filter(user=user).values_list('book_id', flat=True)
-        return Response(list(wishlist_items))
+        wishlist_items = Wishlist.objects.filter(user=user)
+        books = [item.book for item in wishlist_items]
+        print(books)
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD

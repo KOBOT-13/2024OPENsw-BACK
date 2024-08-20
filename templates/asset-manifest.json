@@ -1,0 +1,28 @@
+{
+  "files": {
+    "main.css": "/static/css/main.eb9d3942.css",
+    "main.js": "/static/js/main.5a745783.js",
+    "static/media/profile.png": "/static/media/profile.23da28c0cac6c33995e1.png",
+    "static/media/Logo.svg": "/static/media/Logo.61721c2a4681e5609b3bf10c68cd1c3f.svg",
+    "static/media/ErrorLogo.svg": "/static/media/ErrorLogo.ed6912fa84eaaa4e7831664125e8ee0e.svg",
+    "static/media/Logo320.svg": "/static/media/Logo320.7c9e1803ef0c032ef15448d80c248786.svg",
+    "static/media/Correct.png": "/static/media/Correct.a5c2326103bb477fd8b4.png",
+    "static/media/Wrong.png": "/static/media/Wrong.36e4fd0be82416732e63.png",
+    "static/media/Arrow.svg": "/static/media/Arrow.8ca28b55018541161bec02631c341c6e.svg",
+    "static/media/instargram.svg": "/static/media/instargram.e2894104a2b439585f56665eef26f926.svg",
+    "static/media/talk.svg": "/static/media/talk.9675c1ebe40fa0ff38d207d820536d08.svg",
+    "static/media/Star.svg": "/static/media/Star.d3f61e5cb58dc1650d51bbf96e98a3b8.svg",
+    "static/media/StarColor.svg": "/static/media/StarColor.13bad207b4738701900ae9724fdc277f.svg",
+    "static/media/quiz.svg": "/static/media/quiz.97c9995fcb4079013dbf4c0d9ae9ffd6.svg",
+    "static/media/search.svg": "/static/media/search.7d29cedabc588edd0e624d4d0eeb2027.svg",
+    "static/media/youtube.svg": "/static/media/youtube.62113d4da450c35eb956cb28908947ba.svg",
+    "static/media/report.svg": "/static/media/report.60b8c844111b06c87cc9461757ab97a2.svg",
+    "index.html": "/index.html",
+    "main.eb9d3942.css.map": "/static/css/main.eb9d3942.css.map",
+    "main.5a745783.js.map": "/static/js/main.5a745783.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.eb9d3942.css",
+    "static/js/main.5a745783.js"
+  ]
+}

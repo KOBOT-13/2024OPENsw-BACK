@@ -2,12 +2,6 @@ from django.utils import timezone
 from rest_framework import serializers
 from .models import *
 
-
-class TagSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = ['id', 'name']
-
 CATEGORY_CHOICE = {
     ('fantasy', '판타지'),
     ('novel', '소설'),
@@ -17,8 +11,17 @@ CATEGORY_CHOICE = {
     ('fable', '우화'),
 }
 
+
+class TagSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tag
+        fields = ['id', 'name']
+
+
 class BookSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
+
     class Meta:
         model = Book
         fields = '__all__'

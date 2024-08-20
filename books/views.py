@@ -1,65 +1,52 @@
-import pandas as pd
-from django.contrib.auth import get_user_model
-from django.shortcuts import render, get_object_or_404
-from django.utils.timezone import now
+from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, viewsets, generics, permissions
+from rest_framework import status, viewsets, generics
 from django.db.models import Q
 from datetime import datetime
-
-from .models import *
 from .recommned_utils import *
 from .serializers import *
-from django.conf import settings
-
 from .emotion_analysis import *
 
-# Create your views here.
-books = pd.read_csv('books/recommend/fairytale_data - Sheet1 (3).csv')
-content_similarity = compute_content_similarity(books)
+# 추천 시스템 초기 세팅
+books = pd.read_csv('books/recommend/fairytale_data - Sheet1 (3).csv')  # 책 데이터
+content_similarity = compute_content_similarity(books)  # 책 유사도
 
-def get_user_age(self, birth_date):
-    """생년월일을 이용해 나이를 계산하는 함수"""
-    print(birth_date)
-    if birth_date is None:
-        return None
-    today = datetime.today()
-    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
-    return age
 
-class BookViewSet(viewsets.ModelViewSet):
+class BookViewSet(viewsets.ModelViewSet):  # Book model CRUD
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
-class CharacterViewSet(viewsets.ModelViewSet):
+
+class CharacterViewSet(viewsets.ModelViewSet):  # Character model CRUD
     queryset = Character.objects.all()
     serializer_class = CharacterSerializer
 
-class BookCharactersAPIView(generics.ListAPIView):
+
+class BookCharactersAPIView(generics.ListAPIView):  # Book ID에 해당하는 캐릭터 GET
     serializer_class = CharacterSerializer
 
     def get_queryset(self):
         book_id = self.kwargs['book_id']
         return Character.objects.filter(book_id=book_id)
 
-class MainPageAllBooksAPIView(APIView):
-    permission_classes = [AllowAny]
+
+class MainPageAllBooksAPIView(APIView):  # 메인 페이지에서, 모든 책 Object GET
+    permission_classes = [AllowAny]  # 메인 페이지는 인증 없이 접속 가능
+
     def get(self, request):
         books = Book.objects.all()
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
 
-class BookRecommendationAPIView(APIView):
+
+class BookRecommendationAPIView(APIView):  # 추천 책 생성 API
     permission_classes = [IsAuthenticated]
 
-    def get_user_age(self, birth_date):
-        """생년월일을 이용해 나이를 계산하는 함수"""
-        print(birth_date)
+    def get_user_age(self, birth_date):  # 나이 계산 함수
         if birth_date is None:
             return None
         today = datetime.today()
@@ -67,17 +54,14 @@ class BookRecommendationAPIView(APIView):
         return age
 
     def get(self, request):
-
         # 1. 미리 계산된 책 데이터와 유사도 사용
-        global books, content_similarity  # 전역 변수로 미리 로드된 데이터 사용
+        # 전역 변수로 미리 로드된 데이터 사용
+        global books, content_similarity
 
-        # 2. 사용자의 읽은 책 목록과 호감도(weight) 가져오기
+        # 2. 사용자의 읽은 책 목록과 선호도 가져오기
         user_books = UserBook.objects.filter(user=request.user)
-
         if not user_books.exists():
             return Response({"error": "사용자가 읽은 책 목록이 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
-
-        print(request.user.birth_date)
 
         # 3. user_data 생성
         user_titles = []
@@ -98,7 +82,7 @@ class BookRecommendationAPIView(APIView):
             'rating': user_ratings
         })
 
-        # 4. 사용자 유사도 계산 (이 부분은 요청마다 다를 수 있음)
+        # 4. 사용자 유사도 계산
         user_similarity = compute_user_similarity(user_data, books)
 
         # 5. 추천 시스템 실행
@@ -113,14 +97,14 @@ class BookRecommendationAPIView(APIView):
         # 7. 기존 추천 결과 삭제
         RecommendBooks.objects.filter(user=request.user).delete()
 
-        # 8. 추천 결과를 RecommendBooks에 저장
+        # 8. 추천 결과를 RecommendBooks 에 저장
         RecommendBooks.objects.create(user=request.user, recommended_books=recommended_ids)
 
         # 9. 추천된 책들의 정보 반환
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class RecommendationAPIView(APIView):
+class RecommendationAPIView(APIView):  # 추천 책 결과 GET
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -128,12 +112,13 @@ class RecommendationAPIView(APIView):
             recommendation = RecommendBooks.objects.filter(user=request.user).first()
             book_ids = recommendation.recommended_books
             book_objects = Book.objects.filter(id__in=book_ids)
-            serializer=BookSerializer(book_objects, many=True)
+            serializer = BookSerializer(book_objects, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except RecommendBooks.DoesNotExist:
             return Response({"error": "추천 기록이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
-class UserReadBookCreateAPIView(APIView):
+
+class UserReadBookCreateAPIView(APIView):  # 내가 읽은 책에 추가
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -143,7 +128,8 @@ class UserReadBookCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserReadBooksAPIView(APIView):
+
+class UserReadBooksAPIView(APIView):  # 내가 읽은 책 목록 GET
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -152,29 +138,23 @@ class UserReadBooksAPIView(APIView):
         serializer = UserBookSerializer(user_books, many=True)
         return Response(serializer.data)
 
-class ToggleWishlistAPIView(APIView):
+
+class ToggleWishlistAPIView(APIView):  # 유저별 찜 목록에 추가/삭제  # 책별 찜 카운트 증가/감소
     permission_classes = [IsAuthenticated]
 
     def post(self, request, book_id):
         user = request.user
 
         try:
-            # Wishlist에서 해당 유저와 책을 찾음
             wishlist_item = Wishlist.objects.filter(user=user, book_id=book_id).first()
             book = Book.objects.filter(id=book_id).first()
-            print(book)
-            print(book.wish_count)
-
-
 
             if wishlist_item:
-                # 존재하면 삭제 (찜 취소)
                 wishlist_item.delete()
                 book.wish_count -= 1
                 book.save()
                 return Response({"message": "찜 목록에서 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
             else:
-                # 존재하지 않으면 추가
                 Wishlist.objects.create(user=user, book_id=book_id)
                 book.wish_count += 1
                 book.save()
@@ -183,36 +163,35 @@ class ToggleWishlistAPIView(APIView):
         except Book.DoesNotExist:
             return Response({"error": "책을 찾을 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
-class UserWishlistAPIView(APIView):
+
+class UserWishlistAPIView(APIView):  # 유저의 찜 목록 GET
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
         wishlist_items = Wishlist.objects.filter(user=user)
         books = [item.book for item in wishlist_items]
-        print(books)
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PostViewSet(viewsets.ModelViewSet): # 독후감에 대한 CRUD
+class PostViewSet(viewsets.ModelViewSet):  # Post model CRUD
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer):  # Post Create 시 감정 분석  # 감정 분석 후 선호도 저장
         serializer.save(user=self.request.user)
         user = self.request.user
         book_id = serializer.data.get('book')
         post = serializer.data.get('body')
-        print(post)
         analysis = emotion_analysis(post)
-        print(analysis)
         book_post = get_object_or_404(UserBook, user=user, book=book_id)
         book_post.weight = analysis
         book_post.save()
 
-class AllPostByBookView(ListAPIView): # 특정 책에 대한 모든 독후감
+
+class AllPostByBookView(ListAPIView):  # 해당 책에 대한 모든 독후감 GET
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
@@ -220,7 +199,8 @@ class AllPostByBookView(ListAPIView): # 특정 책에 대한 모든 독후감
         book_id = self.kwargs['book_id']
         return Post.objects.filter(book_id=book_id).order_by('-post_date')
 
-class AllPostByUserView(ListAPIView): # 특정 유저에 대한 모든 독후감
+
+class AllPostByUserView(ListAPIView):  # 해당 유저의 모든 독후감 GET
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated]
 
@@ -229,7 +209,7 @@ class AllPostByUserView(ListAPIView): # 특정 유저에 대한 모든 독후감
         return Post.objects.filter(user=user)
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(viewsets.ModelViewSet):  # Comment model CRUD
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
@@ -237,8 +217,8 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    @action(detail=True, methods=['post'])
-    def like(self, request, pk=None):
+    @action(detail=True, methods=['post'])  # Comment 에 대한 부가 기능 1
+    def like(self, request, pk=None):  # Comment 좋아요/취소
         comment = self.get_object()
         user = request.user
         if user in comment.likes.all():
@@ -248,14 +228,15 @@ class CommentViewSet(viewsets.ModelViewSet):
             comment.likes.add(user)
             return Response({'status': 'comment liked'})
 
-    @action(detail=True, methods=['get'])
-    def liked_users(self, request, pk=None):
+    @action(detail=True, methods=['get'])  # Comment 에 대한 부가 기능 2
+    def liked_users(self, request, pk=None):  # Comment 를 좋아요 한 유저 GET
         comment = self.get_object()
         liked_users = comment.likes.all()
         liked_users_data = [{'id': user.id, 'username': user.username} for user in liked_users]
         return Response({'liked_users': liked_users_data})
 
-class AllCommentsByBookView(ListAPIView):
+
+class AllCommentsByBookView(ListAPIView):  # 특정 책에 대한 모든 Comment GET
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
@@ -263,13 +244,15 @@ class AllCommentsByBookView(ListAPIView):
         book_id = self.kwargs['book_id']
         return Comment.objects.filter(book_id=book_id).order_by('-created_at')
 
-class AllCommentsByUserView(ListAPIView):
+
+class AllCommentsByUserView(ListAPIView):  # 유저가 작성한 모든 Comment GET
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
         return Comment.objects.filter(user=user)
+
 
 class BookRequestViewSet(viewsets.ModelViewSet):
     queryset = BookRequest.objects.all()
@@ -285,6 +268,7 @@ class BookListByTagView(generics.ListAPIView):
     def get_queryset(self):
         tag_id = self.kwargs['tag_id']
         return Book.objects.filter(tags__id=tag_id)
+
 
 class BookSearchView(generics.ListAPIView):
     serializer_class = BookSerializer

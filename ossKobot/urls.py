@@ -21,6 +21,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic import TemplateView
 
 app_name = 'ossKobot'
 
@@ -42,7 +43,9 @@ schema_view_v1 = get_schema_view(
 )
 
 urlpatterns = [
+    path('', TemplateView.as_view(template_name='index.html')),
     path('admin/', admin.site.urls),
+
 
     # app
     path('api/users/', include('users.urls')),

@@ -145,8 +145,11 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000'
+]
 
 CORS_ALLOW_METHODS = (
     'DELETE',
@@ -174,6 +177,10 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 CSRF_COOKIE_HTTPONLY = False
 
 ROOT_URLCONF = 'ossKobot.urls'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 
 TEMPLATES = [
     {

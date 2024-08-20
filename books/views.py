@@ -108,14 +108,17 @@ class RecommendationAPIView(APIView):  # 추천 책 결과 GET
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        try:
-            recommendation = RecommendBooks.objects.filter(user=request.user).first()
-            book_ids = recommendation.recommended_books
-            book_objects = Book.objects.filter(id__in=book_ids)
-            serializer = BookSerializer(book_objects, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except RecommendBooks.DoesNotExist:
+        recommendation = RecommendBooks.objects.filter(user=request.user).first()
+
+        # recommendation 이 None 일 경우 처리
+        if not recommendation:
             return Response({"error": "추천 기록이 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+        book_ids = recommendation.recommended_books
+        book_objects = Book.objects.filter(id__in=book_ids)
+        serializer = BookSerializer(book_objects, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class UserReadBookCreateAPIView(APIView):  # 내가 읽은 책에 추가

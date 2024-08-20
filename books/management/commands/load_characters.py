@@ -25,22 +25,22 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         characters_data = [
-            {"name": "첫째 돼지", "book_id": 1},
-            {"name": "둘째 돼지", "book_id": 1},
-            {"name": "셋째 돼지", "book_id": 1},
-            {"name": "늑대", "book_id": 1},
-            {"name": "백설공주", "book_id": 2},
-            {"name": "새 왕비", "book_id": 2},
-            {"name": "일곱난쟁이", "book_id": 2},
-            {"name": "피터팬", "book_id": 3},
-            {"name": "팅커벨", "book_id": 3},
-            {"name": "후크선장", "book_id": 3},
-            {"name": "흥부", "book_id": 4},
-            {"name": "놀부", "book_id": 4},
-            {"name": "제비", "book_id": 4},
-            {"name": "헨젤", "book_id": 5},
-            {"name": "그레텔", "book_id": 5},
-            {"name": "마녀", "book_id": 5},
+            {"name": "첫째 돼지", "book_id": 1, "character_image":"character/첫째돼지.png"},
+            {"name": "둘째 돼지", "book_id": 1, "character_image":"character/둘째돼지.png"},
+            {"name": "셋째 돼지", "book_id": 1, "character_image":"character/셋째돼지.png"},
+            {"name": "늑대", "book_id": 1, "character_image":"character/늑대.png"},
+            {"name": "백설공주", "book_id": 2, "character_image":"character/백설공주.png"},
+            {"name": "새 왕비", "book_id": 2, "character_image":"character/왕비.png"},
+            {"name": "일곱난쟁이", "book_id": 2, "character_image":"character/일곱난쟁이.png"},
+            {"name": "피터팬", "book_id": 3, "character_image":"character/피터팬.png"},
+            {"name": "팅커벨", "book_id": 3, "character_image":"character/팅커벨.png"},
+            {"name": "후크선장", "book_id": 3, "character_image":"character/후크선장.png"},
+            {"name": "흥부", "book_id": 4, "character_image":"character/흥부.png"},
+            {"name": "놀부", "book_id": 4, "character_image":"character/놀부.png"},
+            {"name": "제비", "book_id": 4, "character_image":"character/제비.png"},
+            {"name": "헨젤", "book_id": 5, "character_image":"character/헨젤.png"},
+            {"name": "그레텔", "book_id": 5, "character_image":"character/그레텔.png"},
+            {"name": "마녀", "book_id": 5, "character_image":"character/마녀.png"},
         ]
 
         for character_data in characters_data:
@@ -51,9 +51,9 @@ class Command(BaseCommand):
                 name=character_data["name"],
                 book=book,
                 defaults={
+                    "character_image": character_data["character_image"],
                     "description": description,
                     "greeting": greeting,
-                    "character_image": None,
                     "speaker": "vara",
                     "volume": 0,
                     "speed": 0,
@@ -64,5 +64,6 @@ class Command(BaseCommand):
                     "alpha": 0,
                     "end_pitch": 0,
                 }
+            
             )
             self.stdout.write(self.style.SUCCESS(f"Character '{character_data['name']}' added or already exists."))

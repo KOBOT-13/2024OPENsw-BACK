@@ -40,6 +40,7 @@ SECRET_KEY = get_secret("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "*"
     # ".ap-northeast-2.compute.amazonaws.com"
 ]
 
@@ -144,8 +145,13 @@ MIDDLEWARE = [
     'allauth.account.middleware.AccountMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'http://43.201.3.24:5432'
+]
 
 CORS_ALLOW_METHODS = (
     'DELETE',
@@ -173,6 +179,10 @@ CSRF_TRUSTED_ORIGINS = ['http://localhost:8000']
 CSRF_COOKIE_HTTPONLY = False
 
 ROOT_URLCONF = 'ossKobot.urls'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 
 TEMPLATES = [
     {
@@ -202,8 +212,8 @@ DATABASES = {
         'NAME': get_secret("DB_NAME"),
         'USER': get_secret("DB_USER"),
         'PASSWORD': get_secret("DB_PASSWORD"),
-        'HOST': 'localhost',
-        'PORT': '',
+        'HOST': get_secret("HOST"),
+        'PORT': get_secret("PORT"),
         'OPTIONS': {
             'options': '-c client_encoding=UTF8'
         }
@@ -336,6 +346,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

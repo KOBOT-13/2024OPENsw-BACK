@@ -125,3 +125,19 @@ class BookRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = BookRequest
         fields = '__all__'
+
+class WrittenBookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WrittenBook
+        fields = ['user', 'title', 'author', 'publication_date', 'cover_image', 'synopsis', 'category', 'tags']
+
+    def validate(self, data):
+        # author 필드를 user의 username으로 설정
+        if not data.get('author'):
+            data['author'] = self.context['request'].user.username
+        
+        # publication_date가 설정되지 않은 경우, 오늘 날짜로 설정
+        if not data.get('publication_date'):
+            data['publication_date'] = timezone.now().date()
+
+        return data

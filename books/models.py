@@ -130,3 +130,12 @@ class RecommendBooks(models.Model):  # 추천 도서
     def __str__(self):
         return f'Recommend {self.user.username}'
 
+class WrittenBook(models.Model): # 내가 쓴 책
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reder_writtenBook', on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    author = models.CharField(max_length=100)
+    publication_date = models.DateField(blank=True, null=True)  # 출판 일자
+    cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True)  # 책 사진
+    synopsis = models.TextField(blank=True)  # 줄거리
+    category = models.CharField(verbose_name='카테고리', choices=CATEGORY_CHOICE, blank=True, null=True)  # 카테고리
+    tags = models.ManyToManyField(Tag, related_name='written_books', blank=True)  # 태그

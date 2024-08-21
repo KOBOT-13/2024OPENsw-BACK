@@ -291,3 +291,6 @@ class BookSearchView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
+    queryset = WrittenBook.objects.all()
+    serializer_class = WrittenBookSerializer

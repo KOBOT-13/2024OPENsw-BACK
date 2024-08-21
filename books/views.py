@@ -10,6 +10,7 @@ from datetime import datetime
 from .recommned_utils import *
 from .serializers import *
 from .emotion_analysis import *
+from .models import *
 
 # 추천 시스템 초기 세팅
 books = pd.read_csv('books/recommend/fairytale_data - Sheet1 (3).csv')  # 책 데이터

@@ -27,7 +27,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def list(self, request, *args, **kwargs):
-        conversations = self.get_queryset()
+        conversations = Conversation.objects.filter(user=request.user)
         response_data = []
 
         for conversation in conversations:

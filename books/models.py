@@ -138,4 +138,4 @@ class WrittenBook(models.Model): # 내가 쓴 책
     cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True)  # 책 사진
     synopsis = models.TextField(blank=True)  # 줄거리
     category = models.CharField(verbose_name='카테고리', choices=CATEGORY_CHOICE, blank=True, null=True)  # 카테고리
-    tags = models.ManyToManyField(Tag, related_name='books', blank=True)  # 태그
+    tags = models.ManyToManyField(Tag, related_name='written_books', blank=True)  # 태그

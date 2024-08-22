@@ -54,10 +54,15 @@ class ConversationViewSet(viewsets.ModelViewSet):
         if existing_conversation:
             print(f"Found existing conversation: {existing_conversation.id}")
             serializer = self.get_serializer(existing_conversation)
-            summary_message = get_object_or_404(SummaryMessage, character_sender = character_instance)
-            summary_message.end_key = 1
-            summary_message.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            summary_messages = SummaryMessage.objects.filter(character_sender=character_instance, user_sender=user)
+            if summary_messages.exists():
+                summary_message = summary_messages.first()  # 첫 번째 객체 선택
+                summary_message.end_key = 1
+                summary_message.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "No SummaryMessage found for the given character."},
+                                status=status.HTTP_404_NOT_FOUND)
         
         # Create a new conversation if it does not exist
         print("No existing conversation found, creating a new one.")

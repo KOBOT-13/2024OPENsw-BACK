@@ -12,6 +12,8 @@ from .recommned_utils import *
 from .serializers import *
 from .emotion_analysis import *
 from .models import *
+from .client import *
+import json
 
 # 추천 시스템 초기 세팅
 books = pd.read_csv('books/recommend/fairytale_data - Sheet1 (3).csv')  # 책 데이터
@@ -296,19 +298,29 @@ class BookSearchView(generics.ListAPIView):
 class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
     queryset = WrittenBook.objects.all()
     serializer_class = WrittenBookSerializer
-
-
-class AudioFileAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, filename):
-        if not filename.endswith('.mp3'):
-            filename += '.mp3'
+    character_list = []
+    @action(detail=True, methods=['post'])
+    def wbcheck(self, request):
+        global character_list
+        data = json.loads(request.body)
+        title = data.get('title')
+        synopsis = data.get('synopsis')
+        character = list(data.get('character'))
+        speaker = list(data.get('speaker'))
+        writtenbook = get_object_or_404(WrittenBook, title=title)
         
-        file_path = os.path.join(settings.MEDIA_ROOT, 'audio', filename)
-
-        if os.path.exists(file_path):
-            file_url = f"{settings.MEDIA_URL}audio/{filename}"
-            return Response({"file_url": file_url}, status=200)
-        else:
-            raise Http404("File does not exist")
+        character_list = [name.strip() for name in character.split(',')]
+        speaker_list = [speaker_name.strip() for speaker_name in speaker.split(',')]
+        
+        for i in range(len(character_list)):
+            char_request = Character.objects.create(
+                name = character_list[i],
+                description = f"{character_list[i]}에 대한 설명입니다.",
+                greeting = f"안녕하세요, 저는 {character_list[i]}입니다.",
+                writtenbook = writtenbook,
+                speaker = speaker_list[i]
+            )
+            char_request.save()
+            
+        lalala(title, character_list, synopsis)
+>>>>>>> Stashed changes

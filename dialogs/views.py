@@ -131,7 +131,10 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             
             summary_message = get_object_or_404(SummaryMessage, id=summary_message_id)
             end_key = summary_message.end_key
-            bot_response, chat_summary_message = chatbot(input_message, character_id, summary_message.message, end_key)
+            if character_instance.writtenbook == None:
+                bot_response, chat_summary_message = chatbot(input_message, character_id, summary_message.message, end_key)
+            else:
+                bot_response, chat_summary_message = mybookchat(input_message, character_instance.name, character_instance.writtenbook.title, character_instance.writtenbook.summary_story, summary_message.message, end_key)
             summary_message.message = chat_summary_message
             summary_message.end_key = 0
             summary_message.save()

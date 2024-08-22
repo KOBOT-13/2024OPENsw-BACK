@@ -267,7 +267,17 @@ class ProfileUpdateView(generics.GenericAPIView, mixins.UpdateModelMixin):
 
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+    
+class DeleteAccountView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        try:
+            user.delete()
+            return Response({"detail": "회원 탈퇴가 완료되었습니다."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": f"회원 탈퇴 중 오류가 발생했습니다: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 #카카오톡 로그인 뷰
 """from django.shortcuts import render
 

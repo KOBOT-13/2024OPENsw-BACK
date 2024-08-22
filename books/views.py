@@ -1,4 +1,3 @@
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
@@ -14,6 +13,7 @@ from .emotion_analysis import *
 from .models import *
 from .client import *
 import json
+import socket
 
 # 추천 시스템 초기 세팅
 books = pd.read_csv('books/recommend/fairytale_data - Sheet1 (3).csv')  # 책 데이터
@@ -45,6 +45,10 @@ class MainPageAllBooksAPIView(APIView):  # 메인 페이지에서, 모든 책 Ob
         books = Book.objects.all()
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
+    
+class WrittenBookAPIView(APIView):
+    queryset = WrittenBook.objects.all()
+    serializer_class = WrittenBookSerializer
 
 
 class BookRecommendationAPIView(APIView):  # 추천 책 생성 API
@@ -298,29 +302,42 @@ class BookSearchView(generics.ListAPIView):
 class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
     queryset = WrittenBook.objects.all()
     serializer_class = WrittenBookSerializer
-    character_list = []
-    @action(detail=True, methods=['post'])
-    def wbcheck(self, request):
+    
+    def post(self, request):
         global character_list
         data = json.loads(request.body)
         title = data.get('title')
         synopsis = data.get('synopsis')
-        character = list(data.get('character'))
-        speaker = list(data.get('speaker'))
+        character = data.get('character')
+        speaker = data.get('speaker')
         writtenbook = get_object_or_404(WrittenBook, title=title)
-        
-        character_list = [name.strip() for name in character.split(',')]
-        speaker_list = [speaker_name.strip() for speaker_name in speaker.split(',')]
         
         for i in range(len(character_list)):
             char_request = Character.objects.create(
-                name = character_list[i],
-                description = f"{character_list[i]}에 대한 설명입니다.",
-                greeting = f"안녕하세요, 저는 {character_list[i]}입니다.",
+                name = character[i],
+                description = f"{character[i]}에 대한 설명입니다.",
+                greeting = f"안녕하세요, 저는 {character[i]}입니다.",
                 writtenbook = writtenbook,
-                speaker = speaker_list[i]
+                speaker = speaker[i]
             )
             char_request.save()
             
-        lalala(title, character_list, synopsis)
->>>>>>> Stashed changes
+        summary_story = lalala(title, character_list, synopsis) # 원하는 함수명으로 변경
+        
+        writtenbook.summary_story = summary_story        
+        
+        
+class AudioFileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, filename):
+        if not filename.endswith('.mp3'):
+            filename += '.mp3'
+        
+        file_path = os.path.join(settings.MEDIA_ROOT, 'audio', filename)
+
+        if os.path.exists(file_path):
+            file_url = f"{settings.MEDIA_URL}audio/{filename}"
+            return Response({"file_url": file_url}, status=200)
+        else:
+            raise Http404("File does not exist")

@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
+            background-color: #ffffff;
             padding: 20px;
             color: #333;
         }
@@ -20,7 +20,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            color: #4CAF50;
+            color: #000000;
         }
         p {
             font-size: 16px;
@@ -29,14 +29,14 @@
         .button {
             display: inline-block;
             padding: 10px 20px;
-            background-color: #4CAF50;
+            background-color: #007AFF;
             color: #ffffff;
             text-decoration: none;
             border-radius: 5px;
             margin-top: 20px;
         }
         .button:hover {
-            background-color: #45a049;
+            background-color: #005bbd;
         }
     </style>
 </head>
@@ -46,7 +46,7 @@
         <p>안녕하세요 {{ user.username }}님!</p>
         <p>이메일 주소를 확인하려면 아래 링크를 클릭하세요</p>
         <p>
-            <a href="{{ activate_url }}" class="button">이메일 인증하기</a>
+            <a href="{{ activate_url }}" class="button" style="color: #ffffff;">이메일 인증하기</a>
         </p>
         <p>감사합니다!</p>
     </div>

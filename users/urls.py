@@ -37,4 +37,5 @@ urlpatterns = [
 
     path('profile/', ProfileView.as_view(), name='profile'),  # 프로필 URL 추가
     path('profile/update/', ProfileUpdateView.as_view(), name='profile-update'),
+    path('delete_account/', DeleteAccountView.as_view(), name='delete-account'),
 ]

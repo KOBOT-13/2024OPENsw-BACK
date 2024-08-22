@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
@@ -291,6 +292,23 @@ class BookSearchView(generics.ListAPIView):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+
 class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
     queryset = WrittenBook.objects.all()
     serializer_class = WrittenBookSerializer
+
+
+class AudioFileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, filename):
+        if not filename.endswith('.mp3'):
+            filename += '.mp3'
+        
+        file_path = os.path.join(settings.MEDIA_ROOT, 'audio', filename)
+
+        if os.path.exists(file_path):
+            file_url = f"{settings.MEDIA_URL}audio/{filename}"
+            return Response({"file_url": file_url}, status=200)
+        else:
+            raise Http404("File does not exist")

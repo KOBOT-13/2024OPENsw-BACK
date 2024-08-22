@@ -30,4 +30,5 @@ urlpatterns = [
     path('wishlist/', UserWishlistAPIView.as_view(), name='user-wishlist'),
     path('recommend/', BookRecommendationAPIView.as_view(), name='book-recommendation'),
     path('recommend/list/', RecommendationAPIView.as_view(), name='last-recommendation'),
+    path('character/audio/<str:filename>/', AudioFileAPIView.as_view(), name='audio-file'),
 ]

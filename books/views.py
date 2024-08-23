@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
@@ -11,7 +12,6 @@ from .recommned_utils import *
 from .serializers import *
 from .emotion_analysis import *
 from .models import *
-from .client import *
 import json
 import socket
 from .myBook import *
@@ -343,7 +343,6 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
         
         return Response(serializer.data, status=status.HTTP_201_CREATED)    
         
-        
 class AudioFileAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -358,3 +357,10 @@ class AudioFileAPIView(APIView):
             return Response({"file_url": file_url}, status=200)
         else:
             raise Http404("File does not exist")
+        
+class WrittenBookCharactersAPIView(generics.ListAPIView):  # WrittenBook ID에 해당하는 캐릭터 GET
+    serializer_class = CharacterSerializer
+
+    def get_queryset(self):
+        writtenbook_id = self.kwargs['writtenbook_id']
+        return Character.objects.filter(writtenbook_id=writtenbook_id)

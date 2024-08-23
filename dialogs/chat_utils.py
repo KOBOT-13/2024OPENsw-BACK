@@ -75,9 +75,6 @@ def mybookchat(input_message, char, book_title, summary_story, summary_message, 
     try:
         model = "gpt-3.5-turbo"
         
-        # 이전 대화 요약 가져오기
-        # summary = memory.load_memory_variables({}).get("history", "")
-        # 메시지 구성
         messages = [
             {"role": "system", "content": f"{book_title}의 전체 스토리 요약: {summary_story}"},
             {"role": "system", "content": "답변은 한국어로하고 너는 인공지능 챗봇이 아닌" + book_title + " 의 " + char + "으로서 대답하고, 정확한 이야기의 내용을 근거해서 대답해줘, 너가" + char +"라 생각하고 대화하듯이 대답해줘"},

@@ -14,6 +14,7 @@ from .models import *
 from .client import *
 import json
 import socket
+from .myBook import *
 
 # 추천 시스템 초기 세팅
 books = pd.read_csv('books/recommend/fairytale_data - Sheet1 (3).csv')  # 책 데이터
@@ -322,7 +323,7 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
             )
             char_request.save()
             
-        summary_story = lalala(title, character_list, synopsis) # 원하는 함수명으로 변경
+        summary_story = story_analyze(title, character_list, synopsis) # 원하는 함수명으로 변경
         
         writtenbook.summary_story = summary_story        
         

@@ -302,17 +302,23 @@ class BookSearchView(generics.ListAPIView):
 class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
     queryset = WrittenBook.objects.all()
     serializer_class = WrittenBookSerializer
-    
-    def post(self, request):
-        global character_list
-        data = json.loads(request.body)
+    def create(self, request, *args, **kwargs):
+        data = request.data
         title = data.get('title')
         synopsis = data.get('synopsis')
-        character = data.get('character')
-        speaker = data.get('speaker')
-        writtenbook = get_object_or_404(WrittenBook, title=title)
+        character = data.get('character', [])
+        speaker = data.get('speaker', [])
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        writtenbook = serializer.save()
         
-        for i in range(len(character_list)):
+        for i in range(len(character)):
+            if speaker[i] == "여자_어린_아이": speaker = "nyejin"
+            elif speaker[i] == "남자_어린_아이": speaker = "njonghyun"
+            elif speaker[i] == "여자_성인": speaker = "dara-danna"
+            elif speaker[i] == "남자_성인": speaker = "ndonghyun"
+            elif speaker[i] == "여자_노인": speaker = "nsunhee"
+            elif speaker[i] == "남자_노인": speaker = "nsunhee"
             char_request = Character.objects.create(
                 name = character[i],
                 description = f"{character[i]}에 대한 설명입니다.",
@@ -324,7 +330,18 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
             
         summary_story = lalala(title, character_list, synopsis) # 원하는 함수명으로 변경
         
-        writtenbook.summary_story = summary_story        
+        writtenbook.summary_story = summary_story
+        
+        category, tag = make_tag(title, synopsis)
+        
+        writtenbook.category = category
+        
+        writtenbook.save()
+        
+        tag_objects = Tag.objects.filter(name__in=tag)
+        writtenbook.tags.set(tag_objects)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)    
         
         
 class AudioFileAPIView(APIView):

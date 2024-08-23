@@ -13,7 +13,6 @@ router.register('book_requests', BookRequestViewSet, basename='book_request')
 router.register('writtenbook', WrittenBookViewSet, basename='writtenbookViewSet')
 
 
-
 urlpatterns = [
     path('', include(router.urls)),
     path('books/<int:book_id>/posts/', AllPostByBookView.as_view(), name='book-posts'),

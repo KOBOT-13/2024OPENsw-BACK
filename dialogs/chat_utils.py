@@ -41,6 +41,77 @@ CHARACTER_MAP = {
     16: "헨젤과 그레텔의 마녀",
     
 }
+def mybookchat(input_message, char, book_title, summary_story, summary_message, end_key):
+    if summary_message == 0:
+        messages = [
+            {"role": "system", "content": f"전체 스토리 요약: {summary_story}"},
+            {"role": "system", "content": "답변은 한국어로하고 너는 " + book_title + "의" + char + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"}
+        ]
+    else:
+        if isinstance(summary_message, list):
+    # 리스트에서 문자열로 변환
+            summary_message = "\n".join(summary_message)
+        else:
+    # summary_message_list가 리스트가 아닌 경우
+            summary_message = str(summary_message)
+          
+        global memory
+          
+        memory.save_context(
+        inputs={"system": book_title + "의 전체 스토리가 뭐야?"},
+        outputs={"story": summary_story}
+        )
+        memory.save_context(
+        inputs={"system": "이전 대화 내용이 뭐야?"},
+        outputs={"summary": summary_message}
+        )
+        
+        messages = [
+            {"role": "system", "content": f"전체 스토리 요약: {summary_story}"},
+            {"role": "system", "content": "답변은 한국어로하고 너는 " + book_title + "의" + char + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"},
+            {"role": "system", "content": f"이전 대화 요약: {summary_message}"},
+            {"role": "user", "content": input_message},
+        ]
+    try:
+        model = "gpt-3.5-turbo"
+        
+        messages = [
+            {"role": "system", "content": f"{book_title}의 전체 스토리 요약: {summary_story}"},
+            {"role": "system", "content": "답변은 한국어로하고 너는 인공지능 챗봇이 아닌" + book_title + " 의 " + char + "으로서 대답하고, 정확한 이야기의 내용을 근거해서 대답해줘, 너가" + char +"라 생각하고 대화하듯이 대답해줘"},
+            {"role": "system", "content": f"이전 대화 요약: {summary_message}"},
+            {"role": "user", "content": input_message},
+        ]
+        print(messages)
+        # OpenAI API 호출
+        response = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0
+        )
+
+        # 응답 메시지 추출
+        if response.choices:
+            bot_response = response.choices[0].message.content
+        else:
+            bot_response = "No response from the model"
+
+
+        # 메모리에 대화 내용 저장
+        memory.save_context(
+            inputs={"user": input_message},
+            outputs={"assistant": bot_response}
+        )
+        
+        summary_message = memory.load_memory_variables({}).get("history", "")
+    except Exception as e:
+        return f"Error: {str(e)}"
+    if end_key:
+        memory = ConversationSummaryBufferMemory(
+    llm=ChatOpenAI(temperature=0), return_messages=True, max_token_limit=1000)
+        print(bot_response)
+        return bot_response, summary_message
+    print(bot_response)
+    return bot_response, summary_message
 
 # 챗봇 함수 정의
 def chatbot(input_message, char_id, summary_message, end_key): # summary_message를 받아서 예전 대화를 기록하게 해주세요.

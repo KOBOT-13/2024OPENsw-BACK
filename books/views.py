@@ -1,4 +1,3 @@
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
@@ -12,6 +11,10 @@ from .recommned_utils import *
 from .serializers import *
 from .emotion_analysis import *
 from .models import *
+from .client import *
+import json
+import socket
+from .myBook import *
 
 # 추천 시스템 초기 세팅
 books = pd.read_csv('books/recommend/fairytale_data - Sheet1 (3).csv')  # 책 데이터
@@ -43,6 +46,10 @@ class MainPageAllBooksAPIView(APIView):  # 메인 페이지에서, 모든 책 Ob
         books = Book.objects.all()
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
+    
+class WrittenBookAPIView(APIView):
+    queryset = WrittenBook.objects.all()
+    serializer_class = WrittenBookSerializer
 
 
 class BookRecommendationAPIView(APIView):  # 추천 책 생성 API
@@ -296,8 +303,47 @@ class BookSearchView(generics.ListAPIView):
 class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
     queryset = WrittenBook.objects.all()
     serializer_class = WrittenBookSerializer
-
-
+    def create(self, request, *args, **kwargs):
+        data = request.data
+        title = data.get('title')
+        synopsis = data.get('synopsis')
+        character = data.get('character', [])
+        speaker = data.get('speaker', [])
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        writtenbook = serializer.save()
+        
+        for i in range(len(character)):
+            if speaker[i] == "여자_어린_아이": speaker = "nyejin"
+            elif speaker[i] == "남자_어린_아이": speaker = "njonghyun"
+            elif speaker[i] == "여자_성인": speaker = "dara-danna"
+            elif speaker[i] == "남자_성인": speaker = "ndonghyun"
+            elif speaker[i] == "여자_노인": speaker = "nsunhee"
+            elif speaker[i] == "남자_노인": speaker = "nsunhee"
+            char_request = Character.objects.create(
+                name = character[i],
+                description = f"{character[i]}에 대한 설명입니다.",
+                greeting = f"안녕하세요, 저는 {character[i]}입니다.",
+                writtenbook = writtenbook,
+                speaker = speaker[i]
+            )
+            char_request.save()
+            
+        summary_story = story_analyze(title, character, synopsis) # 원하는 함수명으로 변경
+        
+        writtenbook.summary_story = summary_story
+        
+        tag, category = make_tag(title, synopsis)
+        writtenbook.category = category
+        
+        writtenbook.save()
+        
+        tag_objects = Tag.objects.filter(name__in=tag)
+        writtenbook.tags.set(tag_objects)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)    
+        
+        
 class AudioFileAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

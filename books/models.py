@@ -33,6 +33,17 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+    
+class WrittenBook(models.Model): # 내가 쓴 책
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reder_writtenBook', on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    author = models.CharField(max_length=100)
+    publication_date = models.DateField(blank=True, null=True)  # 출판 일자
+    cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True)  # 책 사진
+    synopsis = models.TextField(blank=True)  # 줄거리
+    summary_story = models.TextField(blank=True)
+    category = models.CharField(verbose_name='카테고리', choices=CATEGORY_CHOICE, blank=True, null=True)  # 카테고리
+    tags = models.ManyToManyField(Tag, related_name='written_books', blank=True)  # 태그
 
 
 class Character(models.Model):
@@ -41,10 +52,11 @@ class Character(models.Model):
     description = models.TextField(blank=True)
     character_image = models.ImageField(upload_to='character_image/', blank=True, null=True)
     greeting = models.CharField(max_length=200)  # 인사말
-    book = models.ForeignKey(Book, related_name='characters', on_delete=models.CASCADE)  # 책과의 관계
-
+    book = models.ForeignKey(Book, related_name='book', on_delete=models.CASCADE, null=True)  # 책과의 관계
+    writtenbook = models.ForeignKey(WrittenBook, related_name='writtenbook', on_delete=models.CASCADE, null=True)
+    
     # 상세 설정
-    speaker = models.CharField(max_length=100)
+    speaker = models.CharField(max_length=100, null=True)
     volume = models.IntegerField(default=0)
     speed = models.IntegerField(default=0)
     pitch = models.IntegerField(default=0)
@@ -129,13 +141,3 @@ class RecommendBooks(models.Model):  # 추천 도서
 
     def __str__(self):
         return f'Recommend {self.user.username}'
-
-class WrittenBook(models.Model): # 내가 쓴 책
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reder_writtenBook', on_delete=models.CASCADE)
-    title = models.CharField(max_length=200)
-    author = models.CharField(max_length=100)
-    publication_date = models.DateField(blank=True, null=True)  # 출판 일자
-    cover_image = models.ImageField(upload_to='book_covers/', blank=True, null=True)  # 책 사진
-    synopsis = models.TextField(blank=True)  # 줄거리
-    category = models.CharField(verbose_name='카테고리', choices=CATEGORY_CHOICE, blank=True, null=True)  # 카테고리
-    tags = models.ManyToManyField(Tag, related_name='written_books', blank=True)  # 태그

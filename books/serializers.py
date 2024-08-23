@@ -127,9 +127,11 @@ class BookRequestSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class WrittenBookSerializer(serializers.ModelSerializer):
+    character = serializers.ListField(child=serializers.CharField(),required=False)
+    speaker = serializers.ListField(child=serializers.CharField(),required=False)
     class Meta:
         model = WrittenBook
-        fields = ['user', 'title', 'author', 'publication_date', 'cover_image', 'synopsis', 'category', 'tags']
+        fields = ['user', 'title', 'author', 'publication_date', 'cover_image', 'synopsis', 'summary_story', 'character', 'speaker', 'category', 'tags']
 
     def validate(self, data):
         # author 필드를 user의 username으로 설정
@@ -141,3 +143,19 @@ class WrittenBookSerializer(serializers.ModelSerializer):
             data['publication_date'] = timezone.now().date()
 
         return data
+    
+    def create(self, validated_data):
+        # character와 speaker는 모델에 저장되지 않으므로 제거
+        character = validated_data.pop('character', None)
+        speaker = validated_data.pop('speaker', None)
+        
+        tags = validated_data.pop('tags', [])
+
+        # 나머지 데이터로 WrittenBook 인스턴스 생성
+        written_book = WrittenBook.objects.create(**validated_data)
+        
+        written_book.tags.set(tags)
+
+        # character와 speaker를 활용한 추가 로직 (저장, 로그, 알림 등)을 여기에 추가 가능
+
+        return written_book

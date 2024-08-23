@@ -329,7 +329,7 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
             )
             char_request.save()
             
-        summary_story = story_analyze(title, character_list, synopsis) # 원하는 함수명으로 변경
+        summary_story = story_analyze(title, character, synopsis) # 원하는 함수명으로 변경
         
         writtenbook.summary_story = summary_story
         

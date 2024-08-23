@@ -333,8 +333,7 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
         
         writtenbook.summary_story = summary_story
         
-        category, tag = make_tag(title, synopsis)
-        
+        tag, category = make_tag(title, synopsis)
         writtenbook.category = category
         
         writtenbook.save()

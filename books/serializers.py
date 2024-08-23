@@ -131,7 +131,7 @@ class WrittenBookSerializer(serializers.ModelSerializer):
     speaker = serializers.ListField(child=serializers.CharField(),required=False)
     class Meta:
         model = WrittenBook
-        fields = ['user', 'title', 'author', 'publication_date', 'cover_image', 'synopsis', 'summary_story', 'character', 'speaker', 'category', 'tags']
+        fields = ['id', 'user', 'title', 'author', 'publication_date', 'cover_image', 'synopsis', 'summary_story', 'character', 'speaker', 'category', 'tags']
 
     def validate(self, data):
         # author 필드를 user의 username으로 설정

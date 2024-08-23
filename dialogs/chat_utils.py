@@ -45,7 +45,7 @@ def mybookchat(input_message, char, book_title, summary_story, summary_message, 
     if summary_message == 0:
         messages = [
             {"role": "system", "content": f"전체 스토리 요약: {summary_story}"},
-            {"role": "system", "content": "답변은 한국어로하고 너는 " + book_title + "의" + char + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"}
+            {"role": "system", "content": "답변은 한국어로하고 너는 " + book_title + " 의 " + char + "으로서 대답해줘 (예시: 안녕 나는 의 좋은 형제의 형이야 or  안녕~), 정확한 이야기의 내용을 근거해서 대답해줘, 대답은 대화하듯이 짧게 해줘"}
         ]
     else:
         if isinstance(summary_message, list):
@@ -68,7 +68,7 @@ def mybookchat(input_message, char, book_title, summary_story, summary_message, 
         
         messages = [
             {"role": "system", "content": f"전체 스토리 요약: {summary_story}"},
-            {"role": "system", "content": "답변은 한국어로하고 너는 " + book_title + "의" + char + "이야, 정확한 이야기의 내용을 근거해서 대답해줘"},
+            {"role": "system", "content": "답변은 한국어로하고 너는 " + book_title + " 의 " + char + "으로서 대답해줘 (예시: 안녕 나는 의 좋은 형제의 형이야 or  안녕~), 정확한 이야기의 내용을 근거해서 대답해줘, 대답은 대화하듯이 짧게 해줘"},
             {"role": "system", "content": f"이전 대화 요약: {summary_message}"},
             {"role": "user", "content": input_message},
         ]
@@ -77,7 +77,7 @@ def mybookchat(input_message, char, book_title, summary_story, summary_message, 
         
         messages = [
             {"role": "system", "content": f"{book_title}의 전체 스토리 요약: {summary_story}"},
-            {"role": "system", "content": "답변은 한국어로하고 너는 인공지능 챗봇이 아닌" + book_title + " 의 " + char + "으로서 대답하고, 정확한 이야기의 내용을 근거해서 대답해줘, 너가" + char +"라 생각하고 대화하듯이 대답해줘"},
+            {"role": "system", "content": "답변은 한국어로하고 너는 " + book_title + " 의 " + char + "으로서 대답해줘 (예시: 안녕 나는 의 좋은 형제의 형이야 or  안녕~), 정확한 이야기의 내용을 근거해서 대답해줘, 대답은 대화하듯이 짧게 해줘"},
             {"role": "system", "content": f"이전 대화 요약: {summary_message}"},
             {"role": "user", "content": input_message},
         ]
@@ -116,7 +116,6 @@ def mybookchat(input_message, char, book_title, summary_story, summary_message, 
 # 챗봇 함수 정의
 def chatbot(input_message, char_id, summary_message, end_key): # summary_message를 받아서 예전 대화를 기록하게 해주세요.
     characters = CHARACTER_MAP[char_id]
-    print (summary_message)
     global memory
     if summary_message == 0 :
         messages = [

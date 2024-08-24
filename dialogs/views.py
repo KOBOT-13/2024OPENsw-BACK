@@ -109,6 +109,7 @@ class MessagetoTTS(APIView): # 메시지를 받으면 사용자의 질문, gpt�
             conversation_id = data.get('conversation_id')
             character_id = data.get('character_id')
             summary_message_id = data.get('summary_message_id')
+            summary_message_id -= 1
             
             conversation = get_object_or_404(Conversation, id=conversation_id)
             user_instance = request.user
@@ -222,3 +223,7 @@ class EndChat(APIView):
         summary_message.save()
         
         return Response({'status': 'success', 'message': 'Chat ended successfully.'}, status=status.HTTP_200_OK)
+    
+class SummaryMessageViewSet(viewsets.ModelViewSet):  # Book model CRUD
+    queryset = SummaryMessage.objects.all()
+    serializer_class = SummaryMessageSerializer

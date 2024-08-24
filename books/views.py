@@ -11,7 +11,6 @@ from .recommned_utils import *
 from .serializers import *
 from .emotion_analysis import *
 from .models import *
-from .client import *
 import json
 import socket
 from .myBook import *

@@ -304,6 +304,7 @@ class BookSearchView(generics.ListAPIView):
 class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
     queryset = WrittenBook.objects.all()
     serializer_class = WrittenBookSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_qureyset(self):
         user = self.request.user

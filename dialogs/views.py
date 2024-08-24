@@ -43,13 +43,14 @@ class ConversationViewSet(viewsets.ModelViewSet):
     def start_conversation(self, request):
         user = request.user
         book_id = request.data.get('book')
+        written_book_id = request.data.get('written_book')
         character_id = request.data.get('character')
         character_instance = get_object_or_404(Character, id=character_id)
         
         print(f"Received request to start conversation: user={user}, book_id={book_id}, character_id={character_id}")
         
         # Check if the conversation already exists
-        existing_conversation = Conversation.objects.filter(user=user, book_id=book_id, character_id=character_id).first()
+        existing_conversation = Conversation.objects.filter(user=user, book_id=book_id, written_book_id=written_book_id, character_id=character_id).first()
         
         if existing_conversation:
             print(f"Found existing conversation: {existing_conversation.id}")

@@ -9,7 +9,10 @@ class ConversationSerializer(serializers.ModelSerializer):
         fields = ['id', 'book', 'written_book','book_title', 'character', 'character_name', 'created_at', 'updated_at']
 
     def get_book_title(self, obj):
-        return obj.book.title
+        if obj.book is None:
+            return obj.written_book.title
+        else:
+            return obj.book.title
 
     def get_character_name(self, obj):
         return obj.character.name

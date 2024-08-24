@@ -13,7 +13,7 @@ class Conversation(models.Model):
 
 
     def __str__(self):
-        if self.book.title is None:
+        if self.book is None:
             return f"Conversation between {self.user.username} and {self.character.name} in {self.written_book.title}"
         else:
             return f"Conversation between {self.user.username} and {self.character.name} in {self.book.title}"

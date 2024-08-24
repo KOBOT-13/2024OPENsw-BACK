@@ -13,7 +13,10 @@ class Conversation(models.Model):
 
 
     def __str__(self):
-        return f"Conversation between {self.user.username} and {self.character.name} in {self.book.title}"
+        if self.book.title is None:
+            return f"Conversation between {self.user.username} and {self.character.name} in {self.written_book.title}"
+        else:
+            return f"Conversation between {self.user.username} and {self.character.name} in {self.book.title}"
     
     def has_messages(self):
         return self.messages.exists()

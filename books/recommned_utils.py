@@ -3,16 +3,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 
-# file_path = 'books/recommend/fairytale_data - Sheet1 (3).csv'
-# books = pd.read_csv(file_path)
-#
-# user_data = pd.DataFrame({
-#     'user_id': [1, 1, 1, 1, 1],
-#     'age': [5, 5, 5, 5, 5],
-#     'title': ["아기 돼지 삼형제", "백설공주", "스티브잡스", "피터팬", "모모"],
-#     'rating': [0.2, 0.2, -0.8, 0.1, 0.1]
-# })
-
 # TF-IDF 벡터화 및 유사도 계산
 def compute_content_similarity(books):
 
@@ -40,8 +30,7 @@ def weighted_content_similarity(user_titles, user_ratings, books, content_simila
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     book_indices = [i[0] for i in sim_scores if books.iloc[i[0]]['title'] not in user_titles]
     
-    # Get top 8 recommendations
-    top_8_indices = book_indices[:8]
+    top_8_indices = book_indices[:8] # Get top 8 recommendations
     return books.iloc[top_8_indices]
 
 def compute_user_similarity(user_data, books):
@@ -74,18 +63,3 @@ def hybrid_recommendation(user_titles, user_ratings, books, content_similarity, 
 
     top_8_recommendations = combined_recommendations.head(8)
     return top_8_recommendations
-
-
-# content_similarity = compute_content_similarity(books)
-#
-#
-# user_similarity = compute_user_similarity(user_data, books)
-#
-# user_titles = user_data['title'].unique()
-# user_ratings = user_data.set_index('title')['rating'].reindex(user_titles).values
-#
-# hybrid_recommendations = hybrid_recommendation(user_titles, user_ratings, books, content_similarity, user_similarity)
-#
-# print("\n하이브리드 추천:")
-# print(hybrid_recommendations[['title']])
-

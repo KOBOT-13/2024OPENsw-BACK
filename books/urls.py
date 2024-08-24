@@ -32,4 +32,5 @@ urlpatterns = [
     path('recommend/', BookRecommendationAPIView.as_view(), name='book-recommendation'),
     path('recommend/list/', RecommendationAPIView.as_view(), name='last-recommendation'),
     path('character/audio/<str:filename>/', AudioFileAPIView.as_view(), name='audio-file'),
+    path('writtenbook/<int:writtenbook_id>/characters/', WrittenBookCharactersAPIView.as_view(), name='writtenbook-characters'),
 ]

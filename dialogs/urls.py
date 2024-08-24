@@ -5,6 +5,7 @@ from .views import *
 router = DefaultRouter()
 router.register('conversation', ConversationViewSet, basename='ConversationViewSet')
 router.register('message', MessageViewSet, basename='MessageViewSet')
+router.register('summarymessage', SummaryMessageViewSet, basename='summarymessageviewset')
 
 urlpatterns = [
     path('', include(router.urls)),

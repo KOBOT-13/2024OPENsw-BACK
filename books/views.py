@@ -325,7 +325,8 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
                 description = f"{character[i]}에 대한 설명입니다.",
                 greeting = f"안녕하세요, 저는 {character[i]}입니다.",
                 writtenbook = writtenbook,
-                speaker = speaker
+                speaker = speaker,
+                character_image='profile_image.png'
             )
             char_request.save()
             

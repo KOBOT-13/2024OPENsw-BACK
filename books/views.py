@@ -306,9 +306,9 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
     serializer_class = WrittenBookSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_qureyset(self):
-        user = self.request.user
-        return WrittenBook.objects.filter(user=user)
+    def get_queryset(self):
+        # 로그인한 사용자가 작성한 책만 반환
+        return WrittenBook.objects.filter(user=self.request.user)
 
     def create(self, request, *args, **kwargs):
         data = request.data

@@ -274,6 +274,7 @@ class BookRequestViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(requested_by=self.request.user)
 
+
 class BookListByTagView(generics.ListAPIView):
     serializer_class = BookSerializer
 
@@ -303,6 +304,11 @@ class BookSearchView(generics.ListAPIView):
 class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
     queryset = WrittenBook.objects.all()
     serializer_class = WrittenBookSerializer
+
+    def get_qureyset(self):
+        user = self.request.user
+        return WrittenBook.objects.filter(user=user)
+
     def create(self, request, *args, **kwargs):
         data = request.data
         title = data.get('title')
@@ -342,7 +348,8 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
         writtenbook.tags.set(tag_objects)
         
         return Response(serializer.data, status=status.HTTP_201_CREATED)    
-        
+
+
 class AudioFileAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -357,7 +364,8 @@ class AudioFileAPIView(APIView):
             return Response({"file_url": file_url}, status=200)
         else:
             raise Http404("File does not exist")
-        
+
+
 class WrittenBookCharactersAPIView(generics.ListAPIView):  # WrittenBook ID에 해당하는 캐릭터 GET
     serializer_class = CharacterSerializer
 

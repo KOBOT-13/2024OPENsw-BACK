@@ -6,7 +6,7 @@ class ConversationSerializer(serializers.ModelSerializer):
     character_name = serializers.SerializerMethodField()
     class Meta:
         model = Conversation
-        fields = ['id', 'book', 'book_title', 'character', 'character_name', 'created_at', 'updated_at']
+        fields = ['id', 'book', 'written_book','book_title', 'character', 'character_name', 'created_at', 'updated_at']
 
     def get_book_title(self, obj):
         return obj.book.title

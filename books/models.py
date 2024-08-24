@@ -33,7 +33,8 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
-    
+
+
 class WrittenBook(models.Model): # 내가 쓴 책
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reder_writtenBook', on_delete=models.CASCADE)

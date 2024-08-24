@@ -163,3 +163,11 @@ class WrittenBookSerializer(serializers.ModelSerializer):
         # character와 speaker를 활용한 추가 로직 (저장, 로그, 알림 등)을 여기에 추가 가능
 
         return written_book
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        
+        if instance.cover_image:
+            representation['cover_image'] = f"/media/{instance.cover_image}"
+
+        return representation

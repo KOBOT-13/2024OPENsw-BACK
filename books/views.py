@@ -314,8 +314,8 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
         writtenbook = serializer.save()
         
         for i in range(len(character)):
-            if speaker[i] == "여자_어린_아이": speaker = "nyejin"
-            elif speaker[i] == "남자_어린_아이": speaker = "njonghyun"
+            if speaker[i] == "여자_어린아이": speaker = "nyejin"
+            elif speaker[i] == "남자_어린아이": speaker = "njonghyun"
             elif speaker[i] == "여자_성인": speaker = "dara-danna"
             elif speaker[i] == "남자_성인": speaker = "ndonghyun"
             elif speaker[i] == "여자_노인": speaker = "nsunhee"
@@ -325,7 +325,7 @@ class WrittenBookViewSet(viewsets.ModelViewSet):  # WrittenBook model CRUD
                 description = f"{character[i]}에 대한 설명입니다.",
                 greeting = f"안녕하세요, 저는 {character[i]}입니다.",
                 writtenbook = writtenbook,
-                speaker = speaker[i]
+                speaker = speaker
             )
             char_request.save()
             

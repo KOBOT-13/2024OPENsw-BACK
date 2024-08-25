@@ -115,7 +115,7 @@ def chatbot(input_message, char_id, summary_message, end_key):
     if summary_message == 0 :
         
         messages = [
-            {"role": "system", "content": f"답변은 한국어로하고 너는 " + characters + "이야, 정확한 이야기의 내용을 근거해서 대답해줘 (예시: 안녕 나는 {charaters}야~"},
+            {"role": "system", "content": "답변은 한국어로하고 너는 " + characters + f"이야, 정확한 이야기의 내용을 근거해서 대답해줘 (예시: 안녕 나는 {characters}야~ 인사는 처음에 한번만 하고 이전 대화기록이 있으면 굳이 인사 하지 말아줘, 그리고 답변은 대화처럼 짧게 해줘"},
             {"role": "user", "content": input_message},
         ]
     else :
@@ -131,7 +131,7 @@ def chatbot(input_message, char_id, summary_message, end_key):
         outputs={"summary": summary_message}
     )
         messages = [
-            {"role": "system", "content": f"답변은 한국어로하고 너는 " + characters + "이야, 정확한 이야기의 내용을 근거해서 대답해줘 (예시: 안녕 나는 {charaters}야~"},
+            {"role": "system", "content": f"답변은 한국어로하고 너는 " + characters + f"이야, 정확한 이야기의 내용을 근거해서 대답해줘 (예시: 안녕 나는 {characters}야~ 인사는 처음에 한번만 하고 이전 대화기록이 있으면 굳이 인사 하지 말아줘, 그리고 답변은 대화처럼 짧게 해줘"},
             {"role": "system", "content": f"이전 대화 요약: {summary_message}"},
             {"role": "user", "content": input_message},
         ]

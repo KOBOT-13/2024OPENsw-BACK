@@ -29,10 +29,14 @@ class BookSerializer(serializers.ModelSerializer):
         
     def to_representation(self, instance):
         # 데이터를 클라이언트로 반환할 때 호출됨
-        ret = super().to_representation(instance)
+        representation = super().to_representation(instance)
         # 카테고리 필드를 한글로 변환하여 반환
-        ret['category'] = dict(CATEGORY_CHOICE).get(instance.category, instance.category)
-        return ret
+        representation['category'] = dict(CATEGORY_CHOICE).get(instance.category, instance.category)
+
+        if instance.cover_image:
+            representation['cover_image'] = f"/media/{instance.cover_image}"
+
+        return representation
 
     def create(self, validated_data):
         tag_ids = validated_data.pop('tag_ids', [])

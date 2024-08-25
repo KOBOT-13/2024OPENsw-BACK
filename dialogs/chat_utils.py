@@ -73,7 +73,7 @@ def mybookchat(input_message, char, book_title, summary_story, summary_message, 
             {"role": "user", "content": input_message},
         ]
     try:
-        model = "gpt-3.5-turbo"
+        model = "gpt-4o"
         
         # OpenAI API 호출
         response = client.chat.completions.create(
@@ -136,7 +136,7 @@ def chatbot(input_message, char_id, summary_message, end_key):
             {"role": "user", "content": input_message},
         ]
     try:
-        model = "gpt-3.5-turbo"
+        model = "gpt-4o"
 
         response = client.chat.completions.create(
             model=model,

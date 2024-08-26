@@ -45,7 +45,7 @@ def mybookchat(input_message, char, book_title, summary_story, summary_message, 
     if summary_message == 0:
         messages = [
             {"role": "system", "content": f"전체 스토리 요약: {summary_story}"},
-            {"role": "system", "content": f"답변은 한국어로하고 너는 " + book_title + " 의 " + char + "으로서 대답해줘 (예시: 안녕 나는 {book_title}의 {char}이야 안녕~), 스토리 요약의 내용을 근거해서 대답해줘, 대답은 대화하듯이 짧게 해줘"}
+            {"role": "system", "content": f"답변은 한국어로하고 너는 " + book_title + " 의 " + char + "으로서 대답해줘 (예시: 안녕 나는 {book_title}의 {char}이야 안녕~), 스토리 요약의 내용을 근거해서 대답해줘, 대답은 대화하듯이 짧게 해줘, 인사는 한번만 해"}
         ]
     else:
         if isinstance(summary_message, list):
@@ -68,7 +68,7 @@ def mybookchat(input_message, char, book_title, summary_story, summary_message, 
         
         messages = [
             {"role": "system", "content": f"전체 스토리 요약: {summary_story}"},
-            {"role": "system", "content": f"답변은 한국어로하고 너는 " + book_title + " 의 " + char + "으로서 대답해줘 (예시: 안녕 나는 {book_title}의 {char}이야 안녕~), 스토리 요약의 내용을 근거해서 대답해줘, 대답은 대화하듯이 짧게 해줘"},
+            {"role": "system", "content": f"답변은 한국어로하고 너는 " + book_title + " 의 " + char + "으로서 대답해줘 (예시: 안녕 나는 {book_title}의 {char}이야 안녕~), 스토리 요약의 내용을 근거해서 대답해줘, 대답은 대화하듯이 짧게 해줘, 인사는 한번만 해."},
             {"role": "system", "content": f"이전 대화 요약: {summary_message}"},
             {"role": "user", "content": input_message},
         ]

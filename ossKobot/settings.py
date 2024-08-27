@@ -61,8 +61,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.kakao',  # 카카오 소셜 로그인
     'dj_rest_auth',
     'rest_framework_simplejwt.token_blacklist',
     'dj_rest_auth.registration',
@@ -78,17 +76,6 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-# 카카오톡 api
-# SOCIALACCOUNT_PROVIDERS = {
-#     'kakao': {
-#         'APP': {
-#             'client_id': '35e3a75771e92a596518518719f8d59f',
-#             'secret': 'mOkb8h7AxH4XuZtfzi7VFSrOMMuv303r',
-#             'key': ''
-#         }
-#     }
-# }
-
 REST_AUTH = {
     'USE_JWT' : True,
     'JWT_AUTH_HTTPONLY': False,
@@ -98,14 +85,9 @@ REST_AUTH = {
     'SESSION_LOGIN' : False
 }
 
-# SOCIALACCOUNT_LOGIN_ON_GET = True # 중간창이 뜨지 않고 카카오 로그인 페이지로 바로 이동
-# LOGIN_REDIRECT_URL = 'main' # 로그인 완료 후 연결될 URL 설정.
-# ACCOUNT_LOGOUT_REDIRECT_URL = 'index' # 로그아웃 후 연결될 URL 설정.
-# ACCOUNT_LOGOUT_ON_GET = True # 로그아웃 요청시 즉시 로그아웃.
-
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # 필요하게 설정할꺼면 나중에 mandatory 로 바꾸면 됨.
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
@@ -220,60 +202,6 @@ DATABASES = {
     }
 }
 
-# 카카오톡
-# SOCIALACCOUNT_PROVIDERS = {
-#     'kakao': {
-#         'APP': {
-#             'client_id': '',
-#             'secret': '',
-#             'key': ''
-#         }
-#     }
-# }
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
-# AUTH_PASSWORD_VALIDATORS = [
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-#     },
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-#     },
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-#     },
-#     {
-#         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-#     },
-# ]
-
-"""
-# 배포 시 설정 변경
-1. REST_FRAMEWORK의 DEFAULT_PERMISSION_CLASSES를 IsAuthenticaed로 바꾸기
-2. CSRF 보호 활성화하기
-    1) 미들웨어에 주석처리 되어있는 것 해제
-    2) 배포 환경에 맞는 도메인 설정 : CSRF_TRUSTED_ORIGINS = ['https://your-production-domain.com']
-    3) CSRF_COOKIE_HTTPONLY = True로 변경
-3. DEBUG 모드 비활성화
-    1) DEBUG = False
-    2) ALLOWED_HOSTS = ['your-production-domain.com']
-4. 보안 설정 강화
-
-##### 보안 관련 설정입니다. 배포 시 주석 해제하고 설정해봅시다. #####
-
-# SECURE_SSL_REDIRECT = True  # HTTPS 사용을 강제
-# SESSION_COOKIE_SECURE = True  # HTTPS를 통해서만 쿠키 전송
-# CSRF_COOKIE_SECURE = True  # HTTPS를 통해서만 CSRF 쿠키 전송
-# SECURE_HSTS_SECONDS = 3600  # HSTS 사용 (1시간)
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-# SECURE_BROWSER_XSS_FILTER = True
-# X_FRAME_OPTIONS = 'DENY'
-
-"""
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -289,7 +217,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny', # 배포 시 AllowAny를 IsAuthenticated로 바꿉니다.
+        'rest_framework.permissions.AllowAny',
     ),
 }
 

@@ -12,8 +12,6 @@ from .recommned_utils import *
 from .serializers import *
 from .emotion_analysis import *
 from .models import *
-import json
-import socket
 from .myBook import *
 
 # 추천 시스템 초기 세팅

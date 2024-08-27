@@ -23,8 +23,6 @@ urlpatterns = [
         name='password_reset_confirm'
     ),
     
-    # path('password_reset_complete/', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
-
     # dj-rest-auth
     path('auth/registration/', RegisterView.as_view(), name='custom-registration'),
     path('auth/login/', CustomLoginView.as_view(), name='custom_login'),
@@ -32,8 +30,6 @@ urlpatterns = [
     path('auth/', include('dj_rest_auth.urls')),
     path("auth/registration/account-confirm-email/<str:key>", CustomConfirmEmailView.as_view(),
         name="account_confirm_email"),
-    # path('kakao-login/', kakao_login_view, name='kakao-login'),
-    # path('kakao-user-info/', kakao_user_info, name='kakao-user-info'),
 
     path('profile/', ProfileView.as_view(), name='profile'),  # 프로필 URL 추가
     path('profile/update/', ProfileUpdateView.as_view(), name='profile-update'),

@@ -119,7 +119,7 @@ class Command(BaseCommand):
                 "cover_image": "morebook_cover/1.png"
             },
             {
-                "title": "심정천",
+                "title": "심청전",
                 "author": "작자 미상",
                 "category": "traditional fairy tale",
                 "tag_ids": [1, 8, 6, 17],

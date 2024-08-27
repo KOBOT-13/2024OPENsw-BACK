@@ -278,18 +278,3 @@ class DeleteAccountView(APIView):
             return Response({"detail": "회원 탈퇴가 완료되었습니다."}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"detail": f"회원 탈퇴 중 오류가 발생했습니다: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-#카카오톡 로그인 뷰
-"""from django.shortcuts import render
-
-def kakao_login_view(request):
-    return render(request, 'kakao_login.html')
-
-def kakao_user_info(request):
-    access_token = request.headers.get('Authorization').split(' ')[1]
-    headers = {
-        "Authorization": f"Bearer {access_token}",
-    }
-    response = requests.get("https://kapi.kakao.com/v2/user/me", headers=headers)
-    if response.status_code == 200:
-        return JsonResponse(response.json())
-    return JsonResponse({'error': 'Failed to retrieve user info'}, status=response.status_code)"""

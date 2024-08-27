@@ -3,25 +3,23 @@ from openai import OpenAI
 from langchain.memory import ConversationSummaryBufferMemory
 from langchain_openai import ChatOpenAI
 from django.conf import settings
-# 환경 변수 로드
+
 api_key = settings.OPENAI_API_KEY
 
-# OpenAI API 키 환경 변수에 설정
+
 os.environ["OPENAI_API_KEY"] = api_key
 
-# 언어 모델 초기화
+
 chat_model = ChatOpenAI(openai_api_key=api_key)
 
-# 대화 요약 메모리 초기화
+
 memory = ConversationSummaryBufferMemory(
     llm=ChatOpenAI(temperature=0),
     max_token_limit= 1000,
     return_messages=True)
 
-# OpenAI 클라이언트 초기화
 client = OpenAI()
 
-# 캐릭터 맵
 CHARACTER_MAP = {
     1: "아기 돼지 삼형제의 첫째 돼지",
     2: "아기 돼지 삼형제의 둘째 돼지",
@@ -108,7 +106,6 @@ def mybookchat(input_message, char, book_title, summary_story, summary_message, 
 
 # 챗봇 함수 정의
 def chatbot(input_message, char_id, summary_message, end_key): 
-    
     characters = CHARACTER_MAP[char_id]
     
     global memory
@@ -136,6 +133,7 @@ def chatbot(input_message, char_id, summary_message, end_key):
             {"role": "user", "content": input_message},
         ]
     try:
+        
         model = "gpt-4o"
 
         response = client.chat.completions.create(

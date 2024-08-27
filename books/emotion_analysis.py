@@ -8,8 +8,6 @@ def emotion_analysis(input_post):
 
     model = BertForSequenceClassification.from_pretrained(model_path)
     tokenizer = BertTokenizer.from_pretrained(model_path)
-    # model = BertForSequenceClassification.from_pretrained('./kobert_fine_tuning_weight')
-    # tokenizer = BertTokenizer.from_pretrained('./kobert_fine_tuning_weight')
     
     nlp = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
     

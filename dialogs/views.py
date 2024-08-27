@@ -222,7 +222,3 @@ class EndChat(APIView):
         summary_message.save()
         
         return Response({'status': 'success', 'message': 'Chat ended successfully.'}, status=status.HTTP_200_OK)
-    
-class SummaryMessageViewSet(viewsets.ModelViewSet):  # Book model CRUD
-    queryset = SummaryMessage.objects.all()
-    serializer_class = SummaryMessageSerializer
